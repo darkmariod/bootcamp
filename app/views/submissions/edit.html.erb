@@ -1,0 +1,12 @@
+<% content_for :community_label, "Edit submission" %>
+
+<% content_for :primary_content do %>
+  <h1 class="text-3xl font-bold mb-6">Editing submission</h1>
+  <%= render "form", submission: @submission %>
+<% end %>
+
+<% content_for :secondary_content do %>
+  <%= render "guidelines" %>
+<% end %>
+
+<%= render "basic_layout" %>

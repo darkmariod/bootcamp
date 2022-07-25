@@ -1,0 +1,10 @@
+<div class="max-w-lg mx-auto p-8 rounded-xl shadow-xl bg-white mt-16">
+
+  <div class="h-[200px] bg-gray-100 overflow-hidden mb-6 rounded-lg">
+    <img src="https:///source.unsplash.com/random/800x400" class="bg-gray-100 object-cover rounded-lg" />
+  </div>
+
+  <h1 class="font-black text-3xl mb-2">Thanks for subscribing <%= @customer.name %></h1>
+  <%= link_to "Continue", root_url, class: "text-indigo-600 underline block" %>
+
+</div>

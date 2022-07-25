@@ -1,0 +1,77 @@
+<% content_for :form_wrap do %>
+  <h2 class="text-3xl font-bold mb-6">Edit <%= resource_name.to_s.humanize %></h2>
+
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put },data: { turbo: false} ) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
+
+    <div class="mb-6">
+      <%= f.label :username %>
+      <%= f.text_field :username, autofocus: true, class: "input" %>
+    </div>
+
+    <div class="mb-6">
+      <%= f.label :email %>
+      <%= f.email_field :email, autocomplete: "email", class: "input" %>
+    </div>
+
+    <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+      <div class="italic my-3 text-gray-600">Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+    <% end %>
+
+    <div class="mb-6">
+      <%= f.label :password %>
+      <%= f.password_field :password, autocomplete: "new-password", class: "input" %>
+      <p class="text-gray-600 text-sm">(leave blank if you don't want to change it)</p>
+      <% if @minimum_password_length %>
+        <p class="text-gray-600 text-sm"><em><%= @minimum_password_length %> characters minimum</em></p>
+      <% end %>
+    </div>
+
+    <div class="mb-6">
+      <%= f.label :password_confirmation %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "input" %>
+    </div>
+
+    <div class="mb-6">
+      <%= f.label :current_password %>
+      <%= f.password_field :current_password, autocomplete: "current-password", class: "input" %>
+      <p class="text-gray-600 text-sm">(we need your current password to confirm your changes)</p>
+    </div>
+
+    <div class="mb-6">
+      <h3 class="mb-2 font-bold text-lg">Subscription preferences</h3>
+
+      <div class="flex items-center">
+        <%= f.check_box :comment_subscription, class: "fill-current text-indigo-600 rounded focus:ring-indigo-600" %>
+        <%= f.label :comment_subscription, "Receive replies to comments via email", class: "mb-0 ml-2 font-normal text-gray-600 normal-case tracking-normal text-base" %>
+      </div>
+
+    </div>
+
+    <%= f.submit "Update", class: "btn btn-indigo w-full" %>
+
+  <% end %>
+
+  <div class="my-6">
+    <h3 class="mb-2 font-bold text-lg">Webbit Premium</h3>
+
+    <% if user_signed_in? && !current_user.subscribed? %>
+      <%= button_to "Subscribe to premium for $5 a month", checkouts_path, data: {turbo: false}, class: "text-white bg-indigo-600 px-3 py-4 rounded w-full block" %>
+    <% else %>
+      <%= button_to "Manage subscription", billings_path, data: {turbo: false}, class: "text-white bg-gray-600 px-3 py-4 block rounded w-full" %>
+    <% end %>
+
+  </div>
+
+  <hr class="my-6"/>
+
+  <h3 class="text-2xl font-bold mb-3">Cancel my account</h3>
+
+  <p><%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete, class: "btn btn-outline w-full" %></p>
+
+  <div class="my-3">
+    <%= link_to "Back", :back, class: "underline" %>
+  </div>
+<% end %>
+
+<%= render "devise/shared/form_wrap" %>

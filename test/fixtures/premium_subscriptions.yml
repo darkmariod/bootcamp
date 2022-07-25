@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  plan: MyString
+  customer_id: MyString
+  subscription_id: MyString
+  status: MyString
+  interval: MyString
+  current_period_end: 2022-04-28 14:39:20
+  current_period_start: 2022-04-28 14:39:20
+  user: one
+
+two:
+  plan: MyString
+  customer_id: MyString
+  subscription_id: MyString
+  status: MyString
+  interval: MyString
+  current_period_end: 2022-04-28 14:39:20
+  current_period_start: 2022-04-28 14:39:20
+  user: two

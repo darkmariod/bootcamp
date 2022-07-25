@@ -1,0 +1,50 @@
+<div class="max-w-4xl mx-auto bg-white p-10 my-16 rounded shadow-lg">
+  <h1 class="text-3xl font-bold">Results for <span class="font-mono italic font-normal"><%= params[:query] %></span></h1>
+
+  <% if @results.any? %>
+    <% @results.each do |result| %>
+      <% if result.searchable.is_a?(Comment) %>
+        <div class="my-10 py-6 border-t">
+          <h3 class="font-bold text-2xl text-indigo-600">Comments</h3>
+          <%= turbo_frame_tag result.searchable do %>
+            <div class="border p-4 rounded my-4 flex items-start">
+              <div>
+                <p class="font-semibold"><%= result.searchable.user.username %></p>
+                <div class="prose prose-indigo"><%= result.searchable.reply %></div>
+
+                <% if author_of?(result.searchable) %>
+                  <div class="flex items-end space-x-3">
+                    <%= link_to "Edit comment", edit_submission_comment_path(result.searchable.submission, result.searchable), class: "text-indigo-600 underline" %>
+
+                    <%= button_to "Delete comment", submission_comment_path(result.searchable.submission, result.searchable), method: :delete, class: "text-indigo-600 underline" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+        </div>
+      <% end %>
+
+      <% if result.searchable.is_a?(Community) %>
+        <div class="my-10 py-6 border-t">
+          <h3 class="font-bold text-2xl text-indigo-600">Communities</h3>
+          <ul class="list-none">
+            <%= render "communities/community", community: result.searchable %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% if result.searchable.is_a?(Submission) %>
+        <div class="my-10 py-6 border-t">
+          <h3 class="font-bold text-2xl text-indigo-600">Submissions</h3>
+          <ul class="list-none">
+            <%= render "submissions/submission", submission: result.searchable %>
+          </ul>
+        </div>
+      <% end %>
+    <% end %>
+  <% else %>
+    Nothing matched your search for <%= params[:query] %>
+  <% end %>
+</div>

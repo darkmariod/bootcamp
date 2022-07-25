@@ -1,0 +1,5 @@
+<%= turbo_stream.replace "#{dom_id(@community)}_subscribe" do %>
+  <%= render "subscriptions/actions", subscription: @subscription, community: @community, user: current_user %>
+<% end %>
+
+<%= turbo_stream.replace "#{dom_id(@community)}_subscriptions_count", @community.subscriptions.size %>

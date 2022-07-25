@@ -1,0 +1,14 @@
+<% content_for :community_label, "Admin submission feed" %>
+
+<% content_for :primary_content do %>
+  <h1 class="text-3xl font-bold mb-6">Submissions</h1>
+  <ul class="list-none divide-y">
+    <%= render partial: "submissions/submission", collection: @submissions %>
+  </ul>
+<% end %>
+
+<% content_for :secondary_content do %>
+  <%= link_to "Users", admin_root_path, class: "text-indigo-600" %>
+<% end %>
+
+<%= render "basic_layout" %>

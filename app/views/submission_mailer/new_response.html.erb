@@ -1,0 +1,11 @@
+<p>Hey <%= @submission.user.username %>,</p>
+
+<p>Your submission <%= link_to @submission.title, submission_url(@submission) %> received a response.</p>
+
+<p>New comment:</p>
+
+<div><%= @comment.reply %></div>
+
+<p>
+  <%= link_to "Unsubscribe", comment_unsubscribe_url(@submission.user.unsubscribe_hash), target: :_blank %>
+</p>

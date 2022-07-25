@@ -1,0 +1,89 @@
+<div data-controller="tabs">
+  <%= form_with(model: submission) do |form| %>
+    <% if submission.errors.any? %>
+      <div class="bg-red-50 text-red-700 p-4 rounded border border-red-300 mb-6">
+        <h2 class="leading-tight font-bold mb-3"><%= pluralize(submission.errors.count, "error") %> prohibited this submission from being saved:</h2>
+
+        <ul>
+          <% submission.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="mb-6 w-full lg:w-2/5">
+      <label for="#">Community</label>
+      <div class="relative">
+
+        <%= form.select :community_id, Community.all.collect { |u| [u.name, u.id] }, { prompt: "Choose a community"}, { class: "select"} %>
+
+        <div class="pointer-events-none absolute inset-y-5 right-2 flex items-center">
+          <%= render_svg "icons/chevron-down", styles: "fill-current w-4 h-4 text-gray-500" %>
+        </div>
+      </div>
+    </div>
+
+    <label for="submission_type">Submission type</label>
+    <nav role="submission type" class="mb-6">
+      <ul class="lg:divide-x divide-y grid grid-cols-1 lg:grid-cols-3 gap-0 border rounded shadow-sm">
+        <li>
+          <a href="#"
+          data-action="click->tabs#toggle" data-tab-id="text"
+            data-tabs-target="button"
+            class="p-4 flex items-center lg:justify-center group justify-start hover:text-indigo-600">
+            <%= render_svg "icons/text", styles: "group-hover:text-indigo-600 w-5 h-5 fill-current mr-2" %>
+            Text
+          </a>
+        </li>
+        <li>
+          <a
+          data-action="click->tabs#toggle"
+            data-tabs-target="button"
+            data-tab-id="url" href="#" class="p-4 flex items-center lg:justify-center group justify-start hover:text-indigo-600 ">
+            <%= render_svg "icons/link", styles: "group-hover:text-indigo-600 w-5 h-5 fill-current mr-2" %>
+            URL
+          </a>
+        </li>
+        <li>
+          <a
+          data-action="click->tabs#toggle" data-tab-id="media"
+            data-tabs-target="button"
+            href="#" class="p-4 flex items-center lg:justify-center group justify-start hover:text-indigo-600">
+            <%= render_svg "icons/image", styles: "group-hover:text-indigo-600 w-5 h-5 fill-current mr-2" %>
+            Image or Video
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="mb-6">
+      <%= form.label :title %>
+      <%= form.text_field :title, class: "input" %>
+    </div>
+
+    <div class="mb-6" data-tabs-target="text">
+      <%= form.label :body %>
+      <%= form.text_area :body, class: "input min-h-[200px]" %>
+    </div>
+
+    <div data-tabs-target="url" class="mb-6 hidden">
+      <%= form.label :url %>
+      <%= form.text_field :url, class: "input" %>
+    </div>
+
+    <div class="hidden mb-6" data-tabs-target="media">
+      <%= form.label :media do %>
+        <span class="mb-1 inline-block">Attach a video or image</span>
+        <%= form.file_field :media, class: "block w-full text-sm text-gray-500
+      file:mr-4 file:py-2 file:px-4
+      file:rounded-full file:border-0
+      file:text-sm file:font-semibold
+      file:bg-indigo-50 file:text-indigo-700
+      hover:file:bg-indigo-100" %>
+      <% end %>
+    </div>
+
+    <%= form.submit class: "btn btn-indigo" %>
+  <% end %>
+</div>

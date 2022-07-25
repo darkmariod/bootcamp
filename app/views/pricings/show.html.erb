@@ -1,0 +1,16 @@
+<% title "Pricing" %>
+
+<div class="max-w-lg mx-auto p-8 rounded-xl shadow-xl bg-white mt-16">
+
+  <div class="h-[200px] bg-gray-100 overflow-hidden mb-6 rounded-lg">
+    <img src="https:///source.unsplash.com/random/800x400" class="bg-gray-100 object-cover rounded-lg" />
+  </div>
+
+  <h1 class="font-black text-3xl mb-2">Subscribe to Webbit Premium</h1>
+  <p class="mb-6">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Corrupti repellat, unde placeat ratione quae, rerum mollitia adipisci eius.</p>
+  <% if user_signed_in? && current_user.subscribed? %>
+    <div class="p-6 rounded bg-indigo-50 text-center block">You are already subscribed</div>
+  <% else %>
+    <%= button_to "Subscribe for $5 per month", checkouts_path, data: {turbo: false}, class: "px-3 py-4 bg-indigo-600 text-white w-full text-center rounded" %>
+  <% end %>
+</div>

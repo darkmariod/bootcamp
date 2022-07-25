@@ -1,0 +1,20 @@
+<% title "Submissions" %>
+
+<% content_for :community_label, "w/#{@community.name}" %>
+
+<%= render "header", community: @community %>
+
+<% content_for :primary_content do %>
+  <ul class="divide-y list-none">
+    <% @community.submissions.each_with_index do |submission, index| %>
+      <%= inject_feed_ad(index) %>
+      <%= render "submissions/submission", submission: submission %>
+    <% end %>
+  </ul>
+<% end %>
+
+<% content_for :secondary_content do %>
+  <%= render "sidebar", community: @community %>
+<% end %>
+
+<%= render "basic_layout" %>

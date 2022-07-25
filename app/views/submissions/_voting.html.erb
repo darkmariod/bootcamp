@@ -1,0 +1,26 @@
+<div class="w-10 flex flex-col items-start">
+  <% if user_signed_in? %>
+    <%= button_to upvote_submission_path(submission),method: :put, class: "block text-center group" do %>
+      <%= render_svg "icons/up-vote", styles: "fill-current text-gray-500 w-4 h-4 group-hover:text-indigo-600" %>
+    <% end %>
+    <div class="flex justify-center pl-1">
+      <span class="text-gray-700 text-center block" id="<%= dom_id(submission)%>_votes_count"><%= submission.total_vote_count %></span>
+    </div>
+
+    <%= button_to downvote_submission_path(submission), method: :put, class: "block text-center group"  do %>
+      <%= render_svg "icons/down-vote", styles: "fill-current text-gray-500 w-4 h-4 group-hover:text-indigo-600" %>
+    <% end %>
+  <% else %>
+
+    <%= link_to new_user_session_path, class: "block text-center group" do %>
+      <%= render_svg "icons/up-vote", styles: "fill-current text-gray-500 w-4 h-4 group-hover:text-indigo-600" %>
+    <% end %>
+    <div class="flex justify-center pl-1">
+      <span class="text-gray-700 text-center block" id="<%= dom_id(submission)%>_votes_count"><%= submission.total_vote_count %></span>
+    </div>
+
+    <%= link_to new_user_session_path, class: "block text-center"  do %>
+      <%= render_svg "icons/down-vote", styles: "fill-current text-gray-500 w-4 h-4 group-hover:text-indigo-600" %>
+    <% end %>
+  <% end %>
+</div>

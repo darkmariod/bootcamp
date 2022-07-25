@@ -1,0 +1,23 @@
+<div class="container mx-auto bg-white rounded mt-10 shadow lg:p-8 p-4 text-gray-800">
+  <h1 class="font-bold text-3xl">Users</h1>
+  <% @users.each do |user| %>
+    <div class="flex flex-wrap justify-start items-center lg:my-4 mb-10">
+      <div class="lg:w-1/4 w-full lg:m-0 mb-2">
+        <%= link_to profile_path(user), class: "flex items-center" do %>
+          <%= gravatar_for(user, class: "rounded-full w-8 h-8") %>
+          <p class="ml-4"><%= user.username %></p>
+        <% end %>
+      </div>
+
+      <div class="lg:w-1/4">
+        <%= user.email %>
+      </div>
+
+      <div class="lg:w-1/4">
+        Account created <%= time_ago_in_words(user.created_at) + " ago" %>
+      </div>
+      <div class="lg:w-1/4">
+        <%= button_to "Delete", profile_path(user), method: :delete, class: "btn btn-outline btn-small" %>
+      </div>
+    </div>
+  <% end %>
