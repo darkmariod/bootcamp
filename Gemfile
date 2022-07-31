@@ -77,13 +77,26 @@ group :test do
   gem "webdrivers"
 end
 
+# Gem for vots
 gem "acts_as_votable", "~> 0.13.2"
+
+# Gem devise
 gem "devise", "~> 4.8"
+
+# Gem images
 gem "image_processing", ">= 1.2"
 gem "inline_svg", "~> 1.8"
 gem 'meta-tags'
+
+# Gem admin
 gem "sidekiq", "~> 6.4"
+
+# Gem stripe
 gem "stripe", "~> 5.53"
+
+# Gem url
 gem "validate_url"
 gem 'friendly_id', '~> 5.4.0'
+
+# Gem pg
 gem 'pg_search'
