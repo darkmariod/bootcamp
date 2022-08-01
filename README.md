@@ -24,7 +24,8 @@ En la aplicación, cada modelo será responsable de diferentes datos.
 - Usar ActiveStorage
 
 ## Requisitos no funcionales
--Que use TURBO o Hotwire.
+  
+- Que use TURBO o Hotwire.
 - Que implemente algún framework CSS.
 - Que implemente actualizaciones en tiempo real.
 - Que implemente pruebas unitarias
