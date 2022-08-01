@@ -33,7 +33,7 @@ En la aplicación, cada modelo será responsable de diferentes datos.
 ## Dependencias (Requisitos de ejecución)
 
 - Git, para clonar el proyecto, instalar según el sistema operativo (o descargar como ZIP)
-- Ruby 3.0.2, puede ser instalado con RVM (Mi favorito), Chruby, RBenv, o nativo
+- Ruby 3.0.2, puede ser instalado con RVM, Chruby, RBenv, o nativo
 - Gema bundler: gem install bundler
 
 ## Instalación
