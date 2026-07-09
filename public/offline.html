@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sin conexión — LawyerEC</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: #f5f2ec; color: #1a273c;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 24px;
+    }
+    .box { max-width: 380px; text-align: center; }
+    .logo {
+      width: 72px; height: 72px; margin: 0 auto 24px; border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #0a1322, #111d30);
+    }
+    h1 { font-size: 22px; margin: 0 0 8px; letter-spacing: -0.01em; }
+    p { color: #4a6083; line-height: 1.55; margin: 0 0 24px; font-size: 15px; }
+    button {
+      background: #111d30; color: #fff; border: 0; border-radius: 10px;
+      padding: 12px 22px; font-size: 15px; font-weight: 600; cursor: pointer;
+    }
+    button:hover { background: #1a273c; }
+    .brand { margin-top: 28px; font-size: 12px; color: #9aacc4; }
+    .brand b { color: #b7853a; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="logo"><img src="/icon-512.png" width="48" height="48" alt="LawyerEC"></div>
+    <h1>Sin conexión</h1>
+    <p>No pudimos conectarnos al sistema. Revise su conexión a internet e intente nuevamente.</p>
+    <button onclick="location.reload()">Reintentar</button>
+    <p class="brand">Lawyer<b>EC</b> · Consorcio Jurídico</p>
+  </div>
+</body>
+</html>

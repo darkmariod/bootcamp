@@ -1,0 +1,88 @@
+<% content_for :title, "#{@proforma.number} — LawyerEC" %>
+
+<%= page_header "Proforma #{@proforma.number}", "Cliente: #{@proforma.client.name}" do %>
+  <div class="flex gap-2">
+    <%= link_to "Editar", edit_proforma_path(@proforma), class: "btn btn-ghost" %>
+    <%= button_to "Eliminar", proforma_path(@proforma), method: :delete,
+          data: { turbo_confirm: "¿Eliminar la proforma #{@proforma.number}?" },
+          class: "btn btn-danger" %>
+  </div>
+<% end %>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+  <div class="lg:col-span-2 card overflow-hidden">
+    <div class="bg-ink-900 text-white px-6 py-5 flex items-start justify-between">
+      <div>
+        <p class="text-xs uppercase tracking-wider text-stone-400">Total de honorarios</p>
+        <p class="text-4xl font-bold mt-1"><%= usd @proforma.total_amount %></p>
+      </div>
+      <div class="text-right text-sm text-ink-300">
+        <p>Emisión: <%= l @proforma.issued_on %></p>
+        <% if @proforma.valid_until %>
+          <p>Válida hasta: <%= l @proforma.valid_until %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="p-6">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-xs uppercase tracking-wide text-stone-500 border-b border-stone-200">
+            <th class="py-2">Descripción</th>
+            <th class="py-2 text-center w-20">Cant.</th>
+            <th class="py-2 text-right w-28">P. unitario</th>
+            <th class="py-2 text-right w-28">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-100">
+          <% @proforma.proforma_items.each do |item| %>
+            <tr>
+              <td class="py-2.5 text-stone-700"><%= item.description %></td>
+              <td class="py-2.5 text-center text-stone-600"><%= item.quantity.to_i %></td>
+              <td class="py-2.5 text-right text-stone-600"><%= usd item.unit_price %></td>
+              <td class="py-2.5 text-right font-medium"><%= usd item.subtotal %></td>
+            </tr>
+          <% end %>
+          <tr>
+            <td colspan="3" class="py-3 text-right font-semibold text-ink-900">Total</td>
+            <td class="py-3 text-right font-bold text-ink-900"><%= usd @proforma.total_amount %></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <% if @proforma.notes.present? %>
+        <div class="mt-4 rounded-lg bg-stone-50 border border-stone-200 px-4 py-3 text-sm text-stone-600 whitespace-pre-line"><%= @proforma.notes %></div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="space-y-6">
+    <div class="card p-5 space-y-3 text-sm">
+      <h2 class="font-semibold text-ink-900">Estado</h2>
+      <p><%= proforma_status_badge(@proforma) %></p>
+      <div class="flex flex-wrap gap-2 pt-1">
+        <% { "aceptada" => "Marcar aceptada", "rechazada" => "Marcar rechazada", "borrador" => "Volver a borrador" }.each do |st, label| %>
+          <% next if @proforma.status == st %>
+          <%= button_to label, update_status_proforma_path(@proforma, status: st), method: :patch,
+                class: "px-3 py-1.5 rounded-lg border border-stone-300 text-xs font-medium hover:bg-stone-50 cursor-pointer" %>
+        <% end %>
+      </div>
+      <div class="pt-3 border-t border-stone-100 space-y-1">
+        <p><span class="text-stone-500">Abogado:</span> <%= @proforma.user&.display_name %></p>
+        <% if @proforma.legal_case %>
+          <p><span class="text-stone-500">Caso:</span> <%= link_to @proforma.legal_case.title, legal_case_path(@proforma.legal_case), class: "text-brass-700 hover:underline" %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card p-5 space-y-3 text-sm">
+      <h2 class="font-semibold text-ink-900">Enviar al cliente</h2>
+      <%= form_with url: send_email_proforma_path(@proforma), class: "space-y-2" do |form| %>
+        <%= form.email_field :email, value: @proforma.client.email, placeholder: "correo@cliente.com",
+              class: "field" %>
+        <%= form.submit "Enviar proforma", class: "w-full btn btn-primary cursor-pointer" %>
+      <% end %>
+      <p class="text-xs text-stone-400">Al enviarla, la proforma en borrador pasa a estado "Enviada".</p>
+    </div>
+  </div>
+</div>

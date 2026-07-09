@@ -1,0 +1,101 @@
+<% content_for :title, "Panel — LawyerEC" %>
+
+<%= page_header "Panel del Consorcio", "Resumen general de la actividad legal del estudio" %>
+
+<!-- Finiquito hero -->
+<%= link_to new_settlement_calculation_path, class: "group block mb-7 rounded-2xl overflow-hidden relative",
+      style: "background: linear-gradient(120deg, var(--color-ink-950), var(--color-ink-900) 55%, #1b2c46);" do %>
+  <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(var(--color-brass-300) 1px, transparent 1px); background-size: 20px 20px;"></div>
+  <div class="relative flex items-center justify-between gap-6 p-7">
+    <div class="flex items-start gap-4">
+      <span class="flex items-center justify-center w-12 h-12 rounded-xl bg-brass-500/15 text-brass-300 ring-1 ring-brass-400/25 shrink-0">
+        <%= icon :briefcase, css: "w-6 h-6" %>
+      </span>
+      <div>
+        <div class="flex items-center gap-2">
+          <p class="display text-xl font-semibold text-white">Calculadora de Finiquito Ecuador</p>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-brass-400/20 text-brass-300 font-semibold uppercase tracking-wide">Principal</span>
+        </div>
+        <p class="text-sm text-ink-200 mt-1.5 max-w-xl">Liquidación laboral completa en 3 pasos — décimos, vacaciones, desahucio e indemnización, con la base legal de cada rubro.</p>
+      </div>
+    </div>
+    <span class="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-brass-300 whitespace-nowrap group-hover:gap-3 transition-all">
+      Calcular ahora <%= icon :plus, css: "w-4 h-4 rotate-45" %>
+    </span>
+  </div>
+<% end %>
+
+<!-- Stat cards -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <% [
+       ["Casos totales", @cases_count, :folder, "text-ink-500"],
+       ["Casos activos", @open_cases_count, :briefcase, "text-emerald-600"],
+       ["Clientes", @clients_count, :users, "text-ink-500"],
+       ["Cálculos realizados", @calculations_count, :calculator, "text-brass-600"]
+     ].each do |label, value, ico, tone| %>
+    <div class="card p-5">
+      <div class="flex items-center justify-between">
+        <p class="text-sm text-stone-500"><%= label %></p>
+        <span class="<%= tone %>"><%= icon ico, css: "w-5 h-5" %></span>
+      </div>
+      <p class="display text-4xl font-semibold text-ink-900 mt-2"><%= value %></p>
+    </div>
+  <% end %>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+  <div class="lg:col-span-2 card overflow-hidden">
+    <div class="px-6 py-4 border-b border-stone-100 flex items-center justify-between">
+      <h2 class="font-semibold text-ink-900">Casos recientes</h2>
+      <%= link_to "Ver todos", legal_cases_path, class: "text-sm text-brass-700 hover:text-brass-800 font-medium" %>
+    </div>
+    <div class="divide-y divide-stone-100">
+      <% @recent_cases.each do |legal_case| %>
+        <%= link_to legal_case_path(legal_case), class: "flex items-center justify-between gap-4 px-6 py-3.5 hover:bg-ink-50 transition-colors" do %>
+          <div class="min-w-0">
+            <p class="font-medium text-ink-900 truncate"><%= legal_case.title %></p>
+            <p class="text-xs text-stone-500 mt-0.5"><%= legal_case.client.name %> · <%= l legal_case.updated_at, format: :short %></p>
+          </div>
+          <div class="flex gap-2 shrink-0">
+            <%= case_type_badge(legal_case) %>
+            <%= status_badge(legal_case) %>
+          </div>
+        <% end %>
+      <% end %>
+      <% if @recent_cases.empty? %>
+        <p class="px-6 py-10 text-sm text-stone-400 text-center">Aún no hay casos registrados.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="space-y-6">
+    <div class="card overflow-hidden">
+      <div class="px-6 py-4 border-b border-stone-100">
+        <h2 class="font-semibold text-ink-900">Casos por materia</h2>
+      </div>
+      <div class="p-6 space-y-3.5">
+        <% @cases_by_type.each do |label, count| %>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-stone-600"><%= label %></span>
+            <span class="font-semibold text-ink-900 tabular-nums"><%= count %></span>
+          </div>
+        <% end %>
+        <% if @cases_by_type.empty? %>
+          <p class="text-sm text-stone-400">Sin datos todavía.</p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card overflow-hidden">
+      <div class="px-6 py-4 border-b border-stone-100">
+        <h2 class="font-semibold text-ink-900">Accesos rápidos</h2>
+      </div>
+      <div class="p-4 grid grid-cols-1 gap-2">
+        <%= link_to "Calcular finiquito", new_settlement_calculation_path, class: "btn btn-gold w-full" %>
+        <%= link_to "Nuevo caso", new_legal_case_path, class: "btn btn-primary w-full" %>
+        <%= link_to "Calcular pensión alimenticia", new_alimony_calculation_path, class: "btn btn-ghost w-full" %>
+        <%= link_to "Nueva proforma", new_proforma_path, class: "btn btn-ghost w-full" %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<div class="card overflow-hidden">
+  <div class="text-white px-6 py-6 border-t-2 border-brass-400" style="background: linear-gradient(135deg, var(--color-ink-950), var(--color-ink-900));">
+    <p class="text-[11px] uppercase tracking-[0.14em] text-brass-300 font-semibold">Liquidación estimada</p>
+    <p class="display text-[42px] leading-none font-semibold mt-2"><%= usd calculation.total_amount %></p>
+    <p class="text-sm text-ink-200 mt-2">
+      <%= calculation.worker_name %> · <%= calculation.details["service_text"] %> de servicio · <%= calculation.reason_label %>
+    </p>
+  </div>
+
+  <div class="p-6 space-y-3 text-sm">
+    <h3 class="font-semibold text-ink-900">Desglose por rubro</h3>
+
+    <% calculation.line_items.each do |item| %>
+      <div class="flex justify-between gap-4 py-1.5 border-b border-stone-100">
+        <div>
+          <p class="text-stone-700"><%= item[:concept] %></p>
+          <p class="text-xs text-stone-400"><%= item[:legal_basis] %></p>
+        </div>
+        <span class="font-medium whitespace-nowrap"><%= usd item[:amount] %></span>
+      </div>
+    <% end %>
+
+    <div class="flex justify-between py-2 text-base">
+      <span class="font-semibold text-ink-900">Total a recibir</span>
+      <span class="font-bold text-ink-900"><%= usd calculation.total_amount %></span>
+    </div>
+
+    <div class="rounded-lg bg-brass-50 border border-brass-200 text-ink-800 px-4 py-3 text-xs">
+      Cálculo estimativo referencial según el Código del Trabajo. El acta de finiquito debe
+      suscribirse ante el Ministerio del Trabajo (SUT). No sustituye asesoría legal del caso concreto.
+    </div>
+
+    <div class="pt-2 space-y-3">
+      <%= form_with url: send_email_settlement_calculation_path(calculation), class: "flex gap-2" do |form| %>
+        <%= form.email_field :email, required: true, placeholder: "correo@cliente.com",
+              class: "flex-1 rounded-lg border border-stone-300 px-3 py-2 text-sm focus:outline-brass-400" %>
+        <%= form.submit "Enviar por correo", class: "btn btn-primary" %>
+      <% end %>
+      <div class="flex gap-2 text-sm">
+        <%= link_to "Ver detalle", settlement_calculation_path(calculation), class: "btn btn-ghost flex-1" %>
+        <%= link_to "Nuevo cálculo", new_settlement_calculation_path, class: "btn btn-ghost flex-1" %>
+      </div>
+    </div>
+  </div>
+</div>

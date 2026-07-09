@@ -1,0 +1,38 @@
+<%= form_with model: user, class: "space-y-5" do |form| %>
+  <% if user.errors.any? %>
+    <div class="rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm">
+      <ul class="list-disc pl-4">
+        <% user.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <label class="field-label">Nombre *</label>
+    <%= form.text_field :name, class: "field" %>
+  </div>
+  <div>
+    <label class="field-label">Email *</label>
+    <%= form.email_field :email_address, class: "field" %>
+  </div>
+  <div>
+    <label class="field-label">
+      Contraseña <%= user.persisted? ? "(dejar en blanco para no cambiarla)" : "*" %>
+    </label>
+    <%= form.password_field :password, autocomplete: "new-password",
+          class: "field" %>
+  </div>
+  <div>
+    <label class="field-label">Rol *</label>
+    <%= form.select :role, options_for_select(User::ROLES.map { |k, v| [ v, k ] }, user.role),
+          {}, class: "field" %>
+  </div>
+
+  <div class="flex gap-3">
+    <%= form.submit user.persisted? ? "Guardar cambios" : "Crear usuario",
+          class: "btn btn-primary" %>
+    <%= link_to "Cancelar", users_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

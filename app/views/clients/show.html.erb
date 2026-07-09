@@ -1,0 +1,46 @@
+<% content_for :title, "#{@client.name} — LawyerEC" %>
+
+<%= page_header @client.name, "Cédula: #{@client.cedula}" do %>
+  <div class="flex gap-2">
+    <%= link_to "Nuevo caso", new_legal_case_path(client_id: @client.id), class: "btn btn-primary" %>
+    <%= link_to "Editar", edit_client_path(@client), class: "btn btn-ghost" %>
+    <%= button_to "Eliminar", client_path(@client), method: :delete,
+          data: { turbo_confirm: "¿Eliminar este cliente y todos sus casos?" },
+          class: "btn btn-danger" %>
+  </div>
+<% end %>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="card p-5 space-y-3 text-sm">
+    <h2 class="font-semibold text-ink-900">Datos de contacto</h2>
+    <p><span class="text-stone-500">Correo:</span> <%= @client.email.presence || "—" %></p>
+    <p><span class="text-stone-500">Teléfono:</span> <%= @client.phone.presence || "—" %></p>
+    <p><span class="text-stone-500">Dirección:</span> <%= @client.address.presence || "—" %></p>
+    <% if @client.notes.present? %>
+      <p class="pt-2 border-t border-stone-100 text-stone-600"><%= @client.notes %></p>
+    <% end %>
+  </div>
+
+  <div class="lg:col-span-2 card">
+    <div class="px-5 py-4 border-b border-stone-100">
+      <h2 class="font-semibold text-ink-900">Casos del cliente (<%= @legal_cases.size %>)</h2>
+    </div>
+    <div class="divide-y divide-stone-100">
+      <% @legal_cases.each do |legal_case| %>
+        <%= link_to legal_case_path(legal_case), class: "flex items-center justify-between px-5 py-3 hover:bg-stone-50" do %>
+          <div>
+            <p class="font-medium text-ink-900"><%= legal_case.title %></p>
+            <p class="text-xs text-stone-500">Abogado: <%= legal_case.user&.display_name %> · <%= l legal_case.updated_at, format: :short %></p>
+          </div>
+          <div class="flex gap-2">
+            <%= case_type_badge(legal_case) %>
+            <%= status_badge(legal_case) %>
+          </div>
+        <% end %>
+      <% end %>
+      <% if @legal_cases.empty? %>
+        <p class="px-5 py-8 text-sm text-stone-400 text-center">Este cliente aún no tiene casos.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

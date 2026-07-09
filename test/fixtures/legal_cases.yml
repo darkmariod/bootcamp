@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  client: one
+  user: one
+  case_type: 1
+  status: 1
+  title: MyString
+  case_number: MyString
+  court: MyString
+  description: MyText
+
+two:
+  client: two
+  user: two
+  case_type: 1
+  status: 1
+  title: MyString
+  case_number: MyString
+  court: MyString
+  description: MyText

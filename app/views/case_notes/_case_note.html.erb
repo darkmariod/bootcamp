@@ -1,0 +1,15 @@
+<div id="<%= dom_id(case_note) %>" class="px-5 py-4">
+  <div class="flex items-start justify-between gap-3">
+    <div>
+      <p class="text-sm text-stone-700 whitespace-pre-line"><%= case_note.body %></p>
+      <p class="text-xs text-stone-400 mt-1">
+        <%= case_note.user&.display_name %> · <%= l case_note.created_at, format: :short %>
+      </p>
+    </div>
+    <%= button_to legal_case_case_note_path(case_note.legal_case, case_note), method: :delete,
+          data: { turbo_confirm: "¿Eliminar esta actuación?" },
+          class: "text-ink-300 hover:text-red-600 cursor-pointer px-1" do %>
+      <%= icon :x_mark, css: "w-4 h-4" %>
+    <% end %>
+  </div>
+</div>

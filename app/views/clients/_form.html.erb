@@ -1,0 +1,43 @@
+<%= form_with model: client, class: "space-y-5" do |form| %>
+  <% if client.errors.any? %>
+    <div class="rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm">
+      <ul class="list-disc pl-4">
+        <% client.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <label class="field-label">Nombre completo *</label>
+      <%= form.text_field :name, class: "field" %>
+    </div>
+    <div>
+      <label class="field-label">Cédula / RUC *</label>
+      <%= form.text_field :cedula, class: "field" %>
+    </div>
+    <div>
+      <label class="field-label">Correo electrónico</label>
+      <%= form.email_field :email, class: "field" %>
+    </div>
+    <div>
+      <label class="field-label">Teléfono</label>
+      <%= form.text_field :phone, class: "field" %>
+    </div>
+    <div class="sm:col-span-2">
+      <label class="field-label">Dirección</label>
+      <%= form.text_field :address, class: "field" %>
+    </div>
+    <div class="sm:col-span-2">
+      <label class="field-label">Notas</label>
+      <%= form.text_area :notes, rows: 3, class: "field" %>
+    </div>
+  </div>
+
+  <div class="flex gap-3">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancelar", clients_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

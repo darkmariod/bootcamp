@@ -1,0 +1,46 @@
+<% content_for :title, "Clientes — LawyerEC" %>
+
+<%= page_header "Clientes", "Personas atendidas por el consorcio" do %>
+  <%= link_to "Nuevo cliente", new_client_path, class: "btn btn-primary" %>
+<% end %>
+
+<div class="card">
+  <div class="p-4 border-b border-stone-100">
+    <%= form_with url: clients_path, method: :get, class: "flex gap-2" do |form| %>
+      <%= form.text_field :q, value: params[:q], placeholder: "Buscar por nombre, cédula o correo...",
+            class: "flex-1 rounded-lg border border-stone-300 px-3 py-2 text-sm focus:outline-brass-400" %>
+      <%= form.submit "Buscar", class: "btn btn-ghost" %>
+    <% end %>
+  </div>
+
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-left text-xs uppercase tracking-wide text-stone-500 border-b border-stone-100">
+        <th class="px-5 py-3">Nombre</th>
+        <th class="px-5 py-3">Cédula</th>
+        <th class="px-5 py-3">Contacto</th>
+        <th class="px-5 py-3">Casos</th>
+        <th class="px-5 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-stone-100">
+      <% @clients.each do |client| %>
+        <tr class="hover:bg-stone-50">
+          <td class="px-5 py-3 font-medium text-ink-900"><%= link_to client.name, client_path(client), class: "hover:underline" %></td>
+          <td class="px-5 py-3 text-stone-600"><%= client.cedula %></td>
+          <td class="px-5 py-3 text-stone-600">
+            <%= client.email %><br>
+            <span class="text-xs text-stone-400"><%= client.phone %></span>
+          </td>
+          <td class="px-5 py-3"><%= client.legal_cases.size %></td>
+          <td class="px-5 py-3 text-right">
+            <%= link_to "Editar", edit_client_path(client), class: "text-brass-700 hover:underline mr-3" %>
+          </td>
+        </tr>
+      <% end %>
+      <% if @clients.empty? %>
+        <tr><td colspan="5" class="px-5 py-10 text-center text-stone-400">No se encontraron clientes.</td></tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

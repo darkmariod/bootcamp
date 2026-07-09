@@ -1,0 +1,38 @@
+# PostgreSQL. Versions 9.3 and up are supported.
+#
+# Install the pg driver:
+#   gem install pg
+# On macOS with Homebrew:
+#   gem install pg -- --with-pg-config=/opt/homebrew/opt/postgresql@16/bin/pg_config
+#
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  # Connects via the local Unix socket as the current OS user (Homebrew default).
+  # Override with PGHOST / PGUSER / PGPASSWORD env vars if needed.
+  host: <%= ENV.fetch("PGHOST", "localhost") %>
+  <% if ENV["PGUSER"] %>username: <%= ENV["PGUSER"] %><% end %>
+  <% if ENV["PGPASSWORD"] %>password: <%= ENV["PGPASSWORD"] %><% end %>
+
+development:
+  <<: *default
+  database: lawyer_ec_development
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  <<: *default
+  database: lawyer_ec_test
+
+# Production uses a single PostgreSQL database. On Dokploy, set DATABASE_URL
+# (or PGHOST/PGUSER/PGPASSWORD + database) as environment variables.
+production:
+  primary:
+    <<: *default
+    database: <%= ENV.fetch("POSTGRES_DB", "lawyer_ec_production") %>
+    # If DATABASE_URL is set (Dokploy), Rails uses it automatically and
+    # overrides the host/user/password/database above.

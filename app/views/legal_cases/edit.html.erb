@@ -1,0 +1,5 @@
+<% content_for :title, "Editar caso — LawyerEC" %>
+<%= page_header "Editar caso", @legal_case.title %>
+<div class="card p-6 max-w-3xl">
+  <%= render "form", legal_case: @legal_case %>
+</div>

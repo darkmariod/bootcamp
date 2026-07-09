@@ -1,0 +1,62 @@
+<% content_for :title, "Usuarios y roles — LawyerEC" %>
+
+<%= page_header "Usuarios y roles", "Control de acceso: qué puede hacer cada rol" do %>
+  <%= link_to new_user_path, class: "inline-flex items-center gap-2 btn btn-primary" do %>
+    <%= icon :plus, css: "w-4 h-4" %> Nuevo usuario
+  <% end %>
+<% end %>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+  <div class="card p-5">
+    <div class="flex items-center gap-2">
+      <span class="text-stone-400"><%= icon :shield %></span>
+      <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-ink-100 text-ink-800">Administrador</span>
+    </div>
+    <p class="text-sm text-stone-500 mt-2">Acceso total: gestiona usuarios, clientes, casos, proformas y calculadoras.</p>
+  </div>
+  <div class="card p-5">
+    <div class="flex items-center gap-2">
+      <span class="text-stone-400"><%= icon :shield %></span>
+      <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Abogado</span>
+    </div>
+    <p class="text-sm text-stone-500 mt-2">Trabaja con clientes, casos, proformas y calculadoras. Sin administración de usuarios.</p>
+  </div>
+</div>
+
+<div class="card">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-left text-xs uppercase tracking-wide text-stone-500 border-b border-stone-100">
+        <th class="px-5 py-3">Usuario</th>
+        <th class="px-5 py-3">Email</th>
+        <th class="px-5 py-3">Rol</th>
+        <th class="px-5 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-stone-100">
+      <% @users.each do |user| %>
+        <tr class="hover:bg-stone-50">
+          <td class="px-5 py-3 font-medium text-ink-900"><%= user.name %></td>
+          <td class="px-5 py-3 text-stone-600"><%= user.email_address %></td>
+          <td class="px-5 py-3">
+            <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium <%= user.admin? ? 'bg-ink-100 text-ink-800' : 'bg-emerald-100 text-emerald-800' %>">
+              <%= user.role_label %>
+            </span>
+          </td>
+          <td class="px-5 py-3 text-right">
+            <div class="inline-flex items-center gap-3">
+              <%= link_to "Editar", edit_user_path(user), class: "text-brass-700 hover:underline" %>
+              <% unless user == Current.user %>
+                <%= button_to user_path(user), method: :delete,
+                      data: { turbo_confirm: "¿Eliminar al usuario #{user.name}?" },
+                      class: "text-stone-400 hover:text-red-600 cursor-pointer" do %>
+                  <%= icon :trash, css: "w-4 h-4" %>
+                <% end %>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

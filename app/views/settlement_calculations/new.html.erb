@@ -1,0 +1,20 @@
+<% content_for :title, "Calculadora de Finiquito — LawyerEC" %>
+
+<%= page_header "Calculadora de Finiquito Ecuador",
+      "Liquidación laboral según el Código del Trabajo · SBU 2026: $482" do %>
+  <%= link_to "Historial", settlement_calculations_path, class: "btn btn-ghost" %>
+<% end %>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+  <div class="card p-6">
+    <%= render "form", calculation: @calculation %>
+  </div>
+
+  <div id="result">
+    <div class="rounded-xl border-2 border-dashed border-stone-300 p-10 text-center text-stone-400">
+      <div class="flex justify-center mb-3 text-ink-300"><%= icon :calculator, css: "w-12 h-12" %></div>
+      <p class="text-sm">Complete los datos y presione <strong>Calcular</strong>.<br>
+      El resultado aparecerá aquí rubro por rubro, con su base legal.</p>
+    </div>
+  </div>
+</div>

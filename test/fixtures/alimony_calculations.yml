@@ -1,0 +1,37 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  legal_case: one
+  applicant_name: MyString
+  monthly_income: 9.99
+  iess_deducted: false
+  children_under_3: 1
+  children_3_plus: 1
+  claimed_children: 1
+  disability_range: 1
+  level: 1
+  percentage: 9.99
+  total_amount: 9.99
+  per_child_amount: 9.99
+  pension_amount: 9.99
+  disability_supplement: 9.99
+  details: 
+
+two:
+  user: two
+  legal_case: two
+  applicant_name: MyString
+  monthly_income: 9.99
+  iess_deducted: false
+  children_under_3: 1
+  children_3_plus: 1
+  claimed_children: 1
+  disability_range: 1
+  level: 1
+  percentage: 9.99
+  total_amount: 9.99
+  per_child_amount: 9.99
+  pension_amount: 9.99
+  disability_supplement: 9.99
+  details: 

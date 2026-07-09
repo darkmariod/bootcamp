@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  legal_case: one
+  worker_name: MyString
+  monthly_salary: 9.99
+  start_date: 2026-07-01
+  end_date: 2026-07-01
+  termination_reason: 1
+  region: 1
+  vacation_days_taken: 1
+  fondos_reserva_paid: false
+  total_amount: 9.99
+  details: 
+
+two:
+  user: two
+  legal_case: two
+  worker_name: MyString
+  monthly_salary: 9.99
+  start_date: 2026-07-01
+  end_date: 2026-07-01
+  termination_reason: 1
+  region: 1
+  vacation_days_taken: 1
+  fondos_reserva_paid: false
+  total_amount: 9.99
+  details: 

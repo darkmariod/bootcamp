@@ -1,0 +1,5 @@
+<% content_for :title, "Editar usuario — LawyerEC" %>
+<%= page_header "Editar usuario", @user.email_address %>
+<div class="card p-6 max-w-lg">
+  <%= render "form", user: @user %>
+</div>

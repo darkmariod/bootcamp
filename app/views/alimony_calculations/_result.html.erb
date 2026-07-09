@@ -1,0 +1,67 @@
+<div class="card overflow-hidden">
+  <div class="text-white px-6 py-6 border-t-2 border-brass-400" style="background: linear-gradient(135deg, var(--color-ink-950), var(--color-ink-900));">
+    <p class="text-[11px] uppercase tracking-[0.14em] text-brass-300 font-semibold">Pensión alimenticia mínima mensual</p>
+    <p class="display text-[42px] leading-none font-semibold mt-2"><%= usd calculation.pension_amount %></p>
+    <p class="text-sm text-ink-200 mt-2"><%= calculation.applicant_name %> · <%= calculation.claimed_children %> de <%= calculation.details["total_children"] %> hijo(s) demandante(s)</p>
+  </div>
+
+  <div class="p-6 space-y-3 text-sm">
+    <h3 class="font-semibold text-ink-900">Desglose del cálculo</h3>
+
+    <div class="flex justify-between py-1.5 border-b border-stone-100">
+      <span class="text-stone-500">Ingreso declarado</span>
+      <span class="font-medium"><%= usd calculation.details["gross_income"] %></span>
+    </div>
+    <div class="flex justify-between py-1.5 border-b border-stone-100">
+      <span class="text-stone-500">Ingreso neto (tras aporte IESS 9.45%)</span>
+      <span class="font-medium"><%= usd calculation.details["net_income"] %></span>
+    </div>
+    <div class="flex justify-between py-1.5 border-b border-stone-100">
+      <span class="text-stone-500">Ingreso de referencia (mínimo 1 SBU = $482)</span>
+      <span class="font-medium"><%= usd calculation.details["reference_income"] %> (<%= calculation.details["sbu_multiple"].to_f.round(2) %> SBU)</span>
+    </div>
+    <div class="flex justify-between py-1.5 border-b border-stone-100">
+      <span class="text-stone-500">Nivel en la tabla</span>
+      <span class="font-medium">Nivel <%= calculation.level %> de 6</span>
+    </div>
+    <div class="flex justify-between py-1.5 border-b border-stone-100">
+      <span class="text-stone-500">Porcentaje aplicado (<%= calculation.details["age_group"] == "under_3" ? "hijos de 0-2 años" : "hijo mayor de 3+ años, Art. 14" %>)</span>
+      <span class="font-medium"><%= calculation.percentage %>%</span>
+    </div>
+    <div class="flex justify-between py-1.5 border-b border-stone-100">
+      <span class="text-stone-500">Pensión base del hogar</span>
+      <span class="font-medium"><%= usd calculation.details["base_amount"] %></span>
+    </div>
+    <% if calculation.disability_supplement.to_f.positive? %>
+      <div class="flex justify-between py-1.5 border-b border-stone-100">
+        <span class="text-stone-500">Suplemento por discapacidad (<%= calculation.disability_label %>)</span>
+        <span class="font-medium text-amber-600">+ <%= usd calculation.disability_supplement %></span>
+      </div>
+    <% end %>
+    <div class="flex justify-between py-1.5 border-b border-stone-100">
+      <span class="text-stone-500">Total del hogar</span>
+      <span class="font-medium"><%= usd calculation.total_amount %></span>
+    </div>
+    <div class="flex justify-between py-1.5">
+      <span class="text-stone-500">Valor por hijo/a</span>
+      <span class="font-medium"><%= usd calculation.per_child_amount %></span>
+    </div>
+
+    <div class="rounded-lg bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-xs">
+      Valor mínimo referencial según el Acuerdo Ministerial MDH-DM-2026-0005-A.
+      El juez puede fijar un valor superior según las circunstancias del caso; nunca inferior (Art. 11).
+    </div>
+
+    <div class="pt-2 space-y-3">
+      <%= form_with url: send_email_alimony_calculation_path(calculation), class: "flex gap-2" do |form| %>
+        <%= form.email_field :email, required: true, placeholder: "correo@cliente.com",
+              class: "flex-1 rounded-lg border border-stone-300 px-3 py-2 text-sm focus:outline-brass-400" %>
+        <%= form.submit "Enviar por correo", class: "btn btn-primary" %>
+      <% end %>
+      <div class="flex gap-2 text-sm">
+        <%= link_to "Ver detalle", alimony_calculation_path(calculation), class: "btn btn-ghost flex-1" %>
+        <%= link_to "Nuevo cálculo", new_alimony_calculation_path, class: "btn btn-ghost flex-1" %>
+      </div>
+    </div>
+  </div>
+</div>

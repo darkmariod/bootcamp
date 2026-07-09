@@ -1,0 +1,40 @@
+<% content_for :title, "Historial de pensiones — LawyerEC" %>
+
+<%= page_header "Pensiones alimenticias", "Historial de cálculos del consorcio" do %>
+  <%= link_to "Nuevo cálculo", new_alimony_calculation_path, class: "btn btn-gold" %>
+<% end %>
+
+<div class="card">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-left text-xs uppercase tracking-wide text-stone-500 border-b border-stone-100">
+        <th class="px-5 py-3">Alimentante</th>
+        <th class="px-5 py-3">Ingreso</th>
+        <th class="px-5 py-3">Hijos</th>
+        <th class="px-5 py-3">Nivel</th>
+        <th class="px-5 py-3">Pensión</th>
+        <th class="px-5 py-3">Fecha</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-stone-100">
+      <% @calculations.each do |calc| %>
+        <tr class="hover:bg-stone-50">
+          <td class="px-5 py-3">
+            <%= link_to calc.applicant_name, alimony_calculation_path(calc), class: "font-medium text-ink-900 hover:underline" %>
+            <% if calc.legal_case %>
+              <p class="text-xs text-stone-400"><%= calc.legal_case.title %></p>
+            <% end %>
+          </td>
+          <td class="px-5 py-3 text-stone-600"><%= usd calc.monthly_income %></td>
+          <td class="px-5 py-3 text-stone-600"><%= calc.claimed_children %>/<%= calc.details&.dig("total_children") %></td>
+          <td class="px-5 py-3 text-stone-600">Nivel <%= calc.level %></td>
+          <td class="px-5 py-3 font-semibold text-ink-900"><%= usd calc.pension_amount %></td>
+          <td class="px-5 py-3 text-stone-500 text-xs"><%= l calc.created_at, format: :short %></td>
+        </tr>
+      <% end %>
+      <% if @calculations.empty? %>
+        <tr><td colspan="6" class="px-5 py-10 text-center text-stone-400">Aún no hay cálculos registrados.</td></tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

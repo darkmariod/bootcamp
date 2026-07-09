@@ -1,0 +1,74 @@
+<% content_for :title, "Iniciar sesión — LawyerEC" %>
+
+<div class="min-h-screen grid lg:grid-cols-2">
+  <!-- Brand panel -->
+  <div class="relative hidden lg:flex flex-col justify-between p-12 text-ink-100 overflow-hidden"
+       style="background: linear-gradient(160deg, var(--color-ink-950), var(--color-ink-900) 60%, #16233a);">
+    <div class="absolute inset-0 opacity-[0.06]"
+         style="background-image: radial-gradient(var(--color-brass-300) 1px, transparent 1px); background-size: 22px 22px;"></div>
+
+    <div class="relative flex items-center gap-3">
+      <span class="flex items-center justify-center w-10 h-10 rounded-lg bg-brass-500/15 text-brass-300 ring-1 ring-brass-400/25">
+        <%= icon :scale, css: "w-6 h-6" %>
+      </span>
+      <span class="display text-2xl font-semibold text-white">Lawyer<span class="text-brass-400">EC</span></span>
+    </div>
+
+    <div class="relative max-w-md">
+      <p class="text-brass-300 text-xs font-semibold tracking-[0.18em] uppercase mb-4">Consorcio Jurídico · Ecuador</p>
+      <h2 class="display text-4xl leading-tight font-semibold text-white">
+        La gestión de su estudio, con el rigor que la ley exige.
+      </h2>
+      <p class="text-ink-200 mt-5 leading-relaxed">
+        Expedientes, clientes, proformas y cálculos legales — finiquito y pensiones alimenticias
+        con la normativa ecuatoriana vigente 2026 — en un solo lugar.
+      </p>
+    </div>
+
+    <div class="relative flex items-center gap-6 text-xs text-ink-300">
+      <span class="flex items-center gap-2"><%= icon :shield, css: "w-4 h-4 text-brass-400" %> Datos protegidos</span>
+      <span class="flex items-center gap-2"><%= icon :scale, css: "w-4 h-4 text-brass-400" %> Tabla oficial 2026</span>
+    </div>
+  </div>
+
+  <!-- Form panel -->
+  <div class="flex items-center justify-center p-6 sm:p-12 bg-paper">
+    <div class="w-full max-w-sm">
+      <div class="lg:hidden flex items-center gap-2.5 mb-8">
+        <span class="flex items-center justify-center w-9 h-9 rounded-lg bg-ink-900 text-brass-300">
+          <%= icon :scale, css: "w-5 h-5" %>
+        </span>
+        <span class="display text-xl font-semibold text-ink-900">Lawyer<span class="text-brass-500">EC</span></span>
+      </div>
+
+      <h1 class="display text-2xl font-semibold text-ink-900">Bienvenido de nuevo</h1>
+      <p class="text-sm text-stone-500 mt-1.5 mb-8">Ingrese sus credenciales para acceder al sistema.</p>
+
+      <% if alert.present? %>
+        <div class="mb-5 rounded-lg bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 text-sm"><%= alert %></div>
+      <% end %>
+      <% if notice.present? %>
+        <div class="mb-5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-2.5 text-sm"><%= notice %></div>
+      <% end %>
+
+      <%= form_with url: session_url, class: "space-y-5" do |form| %>
+        <div>
+          <label class="field-label">Correo electrónico</label>
+          <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username",
+                placeholder: "abogado@consorcio.ec", value: params[:email_address], class: "field" %>
+        </div>
+        <div>
+          <label class="field-label">Contraseña</label>
+          <%= form.password_field :password, required: true, autocomplete: "current-password",
+                placeholder: "••••••••", maxlength: 72, class: "field" %>
+        </div>
+        <%= form.submit "Ingresar al sistema", class: "btn btn-primary w-full" %>
+        <p class="text-center text-sm text-stone-500">
+          <%= link_to "¿Olvidó su contraseña?", new_password_path, class: "text-brass-700 hover:text-brass-800 font-medium" %>
+        </p>
+      <% end %>
+
+      <p class="text-center text-xs text-stone-400 mt-10">© <%= Date.current.year %> LawyerEC · Consorcio Jurídico</p>
+    </div>
+  </div>
+</div>

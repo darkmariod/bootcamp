@@ -1,0 +1,17 @@
+<% content_for :title, "Cálculo de liquidación — LawyerEC" %>
+
+<%= page_header "Cálculo de liquidación laboral",
+      "#{l @calculation.created_at, format: :long} · por #{@calculation.user.display_name}" do %>
+  <div class="flex gap-2">
+    <% if @calculation.legal_case %>
+      <%= link_to "Ver caso vinculado", legal_case_path(@calculation.legal_case), class: "btn btn-ghost" %>
+    <% end %>
+    <%= button_to "Eliminar", settlement_calculation_path(@calculation), method: :delete,
+          data: { turbo_confirm: "¿Eliminar este cálculo?" },
+          class: "btn btn-danger" %>
+  </div>
+<% end %>
+
+<div class="max-w-xl">
+  <%= render "result", calculation: @calculation %>
+</div>

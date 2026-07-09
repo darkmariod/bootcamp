@@ -1,0 +1,5 @@
+<% content_for :title, "Editar proforma — LawyerEC" %>
+<%= page_header "Editar proforma", @proforma.number %>
+<div class="card p-6 max-w-4xl">
+  <%= render "form", proforma: @proforma %>
+</div>

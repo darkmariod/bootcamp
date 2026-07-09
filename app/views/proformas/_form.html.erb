@@ -1,0 +1,87 @@
+<%= form_with model: proforma, class: "space-y-5" do |form| %>
+  <% if proforma.errors.any? %>
+    <div class="rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm">
+      <ul class="list-disc pl-4">
+        <% proforma.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <label class="field-label">Cliente *</label>
+      <%= form.collection_select :client_id, Client.order(:name), :id, :name,
+            { prompt: "Seleccionar cliente" },
+            class: "field" %>
+    </div>
+    <div>
+      <label class="field-label">Caso vinculado (opcional)</label>
+      <%= form.collection_select :legal_case_id, LegalCase.includes(:client).order(updated_at: :desc), :id, :title,
+            { include_blank: "Sin caso" },
+            class: "field" %>
+    </div>
+    <div>
+      <label class="field-label">Fecha de emisión *</label>
+      <%= form.date_field :issued_on, class: "field" %>
+    </div>
+    <div>
+      <label class="field-label">Válida hasta</label>
+      <%= form.date_field :valid_until, class: "field" %>
+    </div>
+  </div>
+
+  <div>
+    <h3 class="text-sm font-semibold text-ink-900 mb-2">Rubros de honorarios</h3>
+    <div class="rounded-lg border border-stone-200 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-stone-50 text-xs uppercase tracking-wide text-stone-500">
+          <tr>
+            <th class="px-3 py-2 text-left">Descripción</th>
+            <th class="px-3 py-2 text-left w-20">Cant.</th>
+            <th class="px-3 py-2 text-left w-32">Precio unit. ($)</th>
+            <% if proforma.persisted? %><th class="px-3 py-2 w-16">Quitar</th><% end %>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-100">
+          <%= form.fields_for :proforma_items do |item_form| %>
+            <tr>
+              <td class="px-3 py-2">
+                <%= item_form.text_field :description, placeholder: "Ej: Patrocinio en audiencia de juzgamiento",
+                      class: "field" %>
+              </td>
+              <td class="px-3 py-2">
+                <%= item_form.number_field :quantity, step: 1, min: 1,
+                      class: "field" %>
+              </td>
+              <td class="px-3 py-2">
+                <%= item_form.number_field :unit_price, step: 0.01, min: 0,
+                      class: "field" %>
+              </td>
+              <% if proforma.persisted? %>
+                <td class="px-3 py-2 text-center">
+                  <% if item_form.object.persisted? %>
+                    <%= item_form.check_box :_destroy, class: "rounded border-stone-300" %>
+                  <% end %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-xs text-stone-400 mt-1">Las filas con descripción vacía se ignoran. Guarde y edite para agregar más rubros.</p>
+  </div>
+
+  <div>
+    <label class="field-label">Notas / condiciones</label>
+    <%= form.text_area :notes, rows: 3, placeholder: "Ej: No incluye tasas judiciales ni gastos notariales. 50% de anticipo.",
+          class: "field" %>
+  </div>
+
+  <div class="flex gap-3">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancelar", proformas_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

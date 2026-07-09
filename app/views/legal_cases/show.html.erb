@@ -1,0 +1,88 @@
+<% content_for :title, "#{@legal_case.title} — LawyerEC" %>
+
+<%= page_header @legal_case.title, "Cliente: #{@legal_case.client.name}" do %>
+  <div class="flex gap-2">
+    <%= link_to "Editar", edit_legal_case_path(@legal_case), class: "btn btn-ghost" %>
+    <%= button_to "Eliminar", legal_case_path(@legal_case), method: :delete,
+          data: { turbo_confirm: "¿Eliminar este caso y su expediente completo?" },
+          class: "btn btn-danger" %>
+  </div>
+<% end %>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="space-y-6">
+    <div class="card p-5 space-y-3 text-sm">
+      <h2 class="font-semibold text-ink-900">Ficha del caso</h2>
+      <div class="flex gap-2"><%= case_type_badge(@legal_case) %> <%= status_badge(@legal_case) %></div>
+      <p><span class="text-stone-500">Nº de proceso:</span> <%= @legal_case.case_number.presence || "—" %></p>
+      <p><span class="text-stone-500">Juzgado:</span> <%= @legal_case.court.presence || "—" %></p>
+      <p><span class="text-stone-500">Abogado responsable:</span> <%= @legal_case.user&.display_name %></p>
+      <p><span class="text-stone-500">Creado:</span> <%= l @legal_case.created_at, format: :long %></p>
+      <% if @legal_case.description.present? %>
+        <p class="pt-2 border-t border-stone-100 text-stone-600 whitespace-pre-line"><%= @legal_case.description %></p>
+      <% end %>
+      <% if @legal_case.alimentos? %>
+        <%= link_to "Calcular pensión para este caso", new_alimony_calculation_path(legal_case_id: @legal_case.id),
+              class: "block mt-2 text-center btn btn-gold" %>
+      <% end %>
+      <% if @legal_case.laboral? %>
+        <%= link_to "Calcular liquidación para este caso", new_settlement_calculation_path(legal_case_id: @legal_case.id),
+              class: "block mt-2 text-center btn btn-gold" %>
+      <% end %>
+    </div>
+
+    <div class="card">
+      <div class="px-5 py-4 border-b border-stone-100">
+        <h2 class="font-semibold text-ink-900">Documentos (<%= @legal_case.documents.count %>)</h2>
+      </div>
+      <div class="divide-y divide-stone-100 text-sm">
+        <% @legal_case.documents.each do |document| %>
+          <div class="flex items-center justify-between px-5 py-3">
+            <div class="min-w-0">
+              <%= link_to document.filename.to_s, rails_blob_path(document, disposition: "attachment"),
+                    class: "font-medium text-brass-700 hover:underline truncate block" %>
+              <p class="text-xs text-stone-400"><%= number_to_human_size(document.byte_size) %> · <%= l document.created_at, format: :short %></p>
+            </div>
+            <%= button_to purge_document_legal_case_path(@legal_case, document_id: document.id), method: :delete,
+                  data: { turbo_confirm: "¿Eliminar #{document.filename}?" },
+                  class: "text-stone-400 hover:text-red-600 cursor-pointer px-2" do %>
+              <%= icon :trash, css: "w-4 h-4" %>
+            <% end %>
+          </div>
+        <% end %>
+        <% if @legal_case.documents.empty? %>
+          <p class="px-5 py-6 text-stone-400 text-center">Sin documentos aún.</p>
+        <% end %>
+      </div>
+      <div class="px-5 py-4 border-t border-stone-100">
+        <%= form_with model: @legal_case, class: "flex items-center gap-2" do |form| %>
+          <%= form.file_field :documents, multiple: true, required: true,
+                class: "flex-1 text-xs text-stone-600 file:mr-2 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-stone-200 file:text-xs file:font-medium file:cursor-pointer" %>
+          <%= form.submit "Subir", class: "px-3 py-1.5 rounded-lg bg-ink-900 text-white text-xs font-medium hover:bg-ink-800 cursor-pointer" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="lg:col-span-2 card">
+    <div class="px-5 py-4 border-b border-stone-100">
+      <h2 class="font-semibold text-ink-900">Actuaciones y seguimiento</h2>
+    </div>
+
+    <div class="p-5 border-b border-stone-100">
+      <%= form_with model: [ @legal_case, @case_note ], class: "flex gap-2",
+            data: { controller: "reset-form", action: "turbo:submit-end->reset-form#reset" } do |form| %>
+        <%= form.text_area :body, rows: 2, placeholder: "Registrar actuación, diligencia o novedad del caso...",
+              class: "flex-1 rounded-lg border border-stone-300 px-3 py-2 text-sm focus:outline-brass-400" %>
+        <%= form.submit "Registrar", class: "self-end btn btn-primary cursor-pointer" %>
+      <% end %>
+    </div>
+
+    <div id="case_notes" class="divide-y divide-stone-100">
+      <%= render @legal_case.case_notes %>
+      <% if @legal_case.case_notes.empty? %>
+        <p id="empty_notes" class="px-5 py-8 text-sm text-stone-400 text-center">Aún no hay actuaciones registradas.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

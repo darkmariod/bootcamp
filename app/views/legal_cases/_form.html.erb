@@ -1,0 +1,63 @@
+<%= form_with model: legal_case, class: "space-y-5" do |form| %>
+  <% if legal_case.errors.any? %>
+    <div class="rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm">
+      <ul class="list-disc pl-4">
+        <% legal_case.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="sm:col-span-2">
+      <label class="field-label">Título del caso *</label>
+      <%= form.text_field :title, placeholder: "Ej: Impugnación de multa por exceso de velocidad",
+            class: "field" %>
+    </div>
+    <div>
+      <label class="field-label">Cliente *</label>
+      <%= form.collection_select :client_id, Client.order(:name), :id, :name,
+            { prompt: "Seleccionar cliente" },
+            class: "field" %>
+    </div>
+    <div>
+      <label class="field-label">Materia *</label>
+      <%= form.select :case_type,
+            options_for_select(LegalCase::CASE_TYPE_LABELS.map { |k, v| [ v, k ] }, legal_case.case_type),
+            {}, class: "field" %>
+    </div>
+    <div>
+      <label class="field-label">Estado *</label>
+      <%= form.select :status,
+            options_for_select(LegalCase::STATUS_LABELS.map { |k, v| [ v, k ] }, legal_case.status || "abierto"),
+            {}, class: "field" %>
+    </div>
+    <div>
+      <label class="field-label">Número de proceso</label>
+      <%= form.text_field :case_number, placeholder: "Ej: 17204-2026-00123",
+            class: "field" %>
+    </div>
+    <div class="sm:col-span-2">
+      <label class="field-label">Juzgado / Unidad Judicial</label>
+      <%= form.text_field :court, placeholder: "Ej: Unidad Judicial de Tránsito de Riobamba",
+            class: "field" %>
+    </div>
+    <div class="sm:col-span-2">
+      <label class="field-label">Descripción de los hechos</label>
+      <%= form.text_area :description, rows: 4,
+            class: "field" %>
+    </div>
+    <div class="sm:col-span-2">
+      <label class="field-label">Adjuntar documentos</label>
+      <%= form.file_field :documents, multiple: true,
+            class: "block w-full text-sm text-stone-600 file:mr-3 file:px-4 file:py-2 file:rounded-lg file:border-0 file:bg-ink-900 file:text-white file:text-sm file:font-medium file:cursor-pointer" %>
+      <p class="text-xs text-stone-400 mt-1">PDF, imágenes, oficios, partes policiales, etc. Los documentos ya subidos se conservan.</p>
+    </div>
+  </div>
+
+  <div class="flex gap-3">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancelar", legal_cases_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

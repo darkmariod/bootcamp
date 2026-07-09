@@ -1,0 +1,82 @@
+<%= form_with model: calculation, class: "space-y-6" do |form| %>
+  <div>
+    <div class="flex items-center gap-3 mb-3">
+      <span class="flex items-center justify-center w-7 h-7 rounded-full bg-ink-900 text-white text-sm font-bold">1</span>
+      <h3 class="font-semibold text-ink-900">Trabajador y salario</h3>
+    </div>
+    <div class="space-y-4 pl-10">
+      <div>
+        <label class="field-label">Nombre del trabajador *</label>
+        <%= form.text_field :worker_name, placeholder: "Ej: María Sánchez",
+              class: "field" %>
+      </div>
+      <div>
+        <label class="field-label">Última remuneración mensual (USD) *</label>
+        <%= form.number_field :monthly_salary, step: 0.01, min: 0, placeholder: "Ej: 800.00",
+              class: "field" %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="flex items-center gap-3 mb-3">
+      <span class="flex items-center justify-center w-7 h-7 rounded-full bg-ink-900 text-white text-sm font-bold">2</span>
+      <h3 class="font-semibold text-ink-900">Fechas de la relación laboral</h3>
+    </div>
+    <div class="grid grid-cols-2 gap-4 pl-10">
+      <div>
+        <label class="field-label">Fecha de ingreso *</label>
+        <%= form.date_field :start_date, class: "field" %>
+      </div>
+      <div>
+        <label class="field-label">Fecha de salida *</label>
+        <%= form.date_field :end_date, class: "field" %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="flex items-center gap-3 mb-3">
+      <span class="flex items-center justify-center w-7 h-7 rounded-full bg-ink-900 text-white text-sm font-bold">3</span>
+      <h3 class="font-semibold text-ink-900">Causa de terminación</h3>
+    </div>
+    <div class="space-y-4 pl-10">
+      <div>
+        <%= form.select :termination_reason,
+              options_for_select(SettlementCalculation::REASON_LABELS.map { |k, v| [ v, k ] }, calculation.termination_reason),
+              {}, class: "field" %>
+        <p class="text-xs text-stone-400 mt-1">El despido intempestivo genera indemnización (Art. 188) + bonificación por desahucio (Art. 185).</p>
+      </div>
+      <div>
+        <label class="field-label">Región (para el décimo cuarto)</label>
+        <%= form.select :region,
+              options_for_select(SettlementCalculation::REGION_LABELS.map { |k, v| [ v, k ] }, calculation.region),
+              {}, class: "field" %>
+      </div>
+    </div>
+  </div>
+
+  <details class="pl-10 group">
+    <summary class="text-sm font-medium text-brass-700 cursor-pointer hover:underline">Opciones avanzadas</summary>
+    <div class="grid grid-cols-2 gap-4 mt-3">
+      <div>
+        <label class="field-label">Días de vacaciones ya tomados</label>
+        <%= form.number_field :vacation_days_taken, min: 0,
+              class: "field" %>
+      </div>
+      <div class="flex items-end pb-2">
+        <label class="flex items-center gap-2 text-sm text-stone-600">
+          <%= form.check_box :fondos_reserva_paid, class: "rounded border-stone-300" %>
+          Fondos de reserva pagados mensualmente
+        </label>
+      </div>
+    </div>
+  </details>
+
+  <% if calculation.legal_case_id.present? || params[:legal_case_id].present? %>
+    <%= form.hidden_field :legal_case_id, value: calculation.legal_case_id || params[:legal_case_id] %>
+    <p class="text-xs text-brass-700 pl-10">Este cálculo quedará vinculado al caso seleccionado.</p>
+  <% end %>
+
+  <%= form.submit "Calcular finiquito", class: "btn btn-gold w-full" %>
+<% end %>
