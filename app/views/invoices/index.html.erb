@@ -1,0 +1,43 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold tracking-tight">Facturas</h1>
+    <%= link_to new_invoice_path, class: "inline-flex items-center gap-1.5 rounded-lg bg-gray-900 text-white text-sm font-medium px-3.5 py-2 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 transition-colors" do %>
+      <%= icon(:plus, class: "h-4 w-4") %> Nueva
+    <% end %>
+  </div>
+
+  <% if @invoices.any? %>
+    <div class="divide-y divide-gray-100 dark:divide-gray-800">
+      <% @invoices.each do |inv| %>
+        <% badge = { "pagada" => "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400",
+                     "vencida" => "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400",
+                     "pendiente" => "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400" } %>
+        <div class="group flex items-center gap-3 py-3">
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2">
+              <p class="text-sm font-medium truncate"><%= inv.name %></p>
+              <span class="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium <%= badge[inv.status] %>"><%= inv.status.capitalize %></span>
+            </div>
+            <p class="text-xs text-gray-400 mt-0.5"><%= inv.client.name %> · <%= l(inv.issue_date, format: :short) %></p>
+          </div>
+
+          <span class="text-sm font-semibold tabular-nums">$<%= number_with_precision(inv.amount, precision: 2) %></span>
+
+          <div class="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <%= link_to edit_invoice_path(inv), class: "p-1.5 rounded-md text-gray-400 hover:text-gray-900 hover:bg-gray-100 dark:hover:text-white dark:hover:bg-gray-800", "aria-label": "Editar" do %>
+              <%= icon(:pencil, class: "h-4 w-4") %>
+            <% end %>
+            <%= link_to invoice_path(inv), data: { turbo_method: :delete, turbo_confirm: "¿Eliminar esta factura?" }, class: "p-1.5 rounded-md text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30", "aria-label": "Eliminar" do %>
+              <%= icon(:trash, class: "h-4 w-4") %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="rounded-xl border border-dashed border-gray-200 dark:border-gray-800 py-12 text-center">
+      <p class="text-sm text-gray-400">No hay facturas registradas</p>
+      <%= link_to "Crear la primera", new_invoice_path, class: "mt-2 inline-block text-sm font-medium text-gray-900 dark:text-white hover:underline" %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,21 @@
+{
+  "name": "Control de Finanzas",
+  "short_name": "Finanzas",
+  "description": "Gestiona tus gastos e ingresos fácilmente",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["finance", "productivity"]
+}

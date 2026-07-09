@@ -1,0 +1,22 @@
+#!/bin/bash
+set -e
+
+# Remove a stale server.pid if the container was killed abruptly.
+if [ -f tmp/pids/server.pid ]; then
+  rm -f tmp/pids/server.pid
+fi
+
+# Make sure gems are in sync (useful after adding a gem without rebuilding).
+bundle check || bundle install
+
+# Wait for Postgres to accept connections, then create/migrate the DB.
+echo "Waiting for PostgreSQL at ${DATABASE_HOST}:${DATABASE_PORT}..."
+until pg_isready -h "${DATABASE_HOST}" -p "${DATABASE_PORT}" -U "${DATABASE_USER}" >/dev/null 2>&1; do
+  sleep 1
+done
+echo "PostgreSQL is ready."
+
+# Create the database and run migrations if needed.
+bin/rails db:prepare
+
+exec "$@"

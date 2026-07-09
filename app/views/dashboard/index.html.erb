@@ -1,0 +1,90 @@
+<%
+  ingresos = current_user.transactions.where(kind: :ingreso).sum(:amount)
+  egresos = current_user.transactions.where(kind: [:gasto_personal, :gasto_cliente]).sum(:amount)
+  saldo = ingresos - egresos
+%>
+
+<div class="space-y-8">
+  <!-- Saldo principal -->
+  <section>
+    <p class="text-sm text-gray-500 dark:text-gray-400"><%= l(Date.current, format: :long).capitalize %></p>
+    <p class="mt-2 text-4xl font-semibold tracking-tight tabular-nums">
+      <span class="text-gray-400 text-2xl align-top">$</span><%= number_with_precision(saldo, precision: 2, delimiter: ",") %>
+    </p>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Saldo disponible</p>
+  </section>
+
+  <!-- Ingresos / Egresos -->
+  <section class="grid grid-cols-2 gap-3">
+    <div class="rounded-xl bg-gray-50 dark:bg-gray-900 p-4">
+      <div class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+        <%= icon(:arrow_down, class: "h-4 w-4") %>
+        <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Ingresos</span>
+      </div>
+      <p class="mt-2 text-xl font-semibold tabular-nums">$<%= number_with_precision(ingresos, precision: 2, delimiter: ",") %></p>
+    </div>
+    <div class="rounded-xl bg-gray-50 dark:bg-gray-900 p-4">
+      <div class="flex items-center gap-1.5 text-rose-600 dark:text-rose-400">
+        <%= icon(:arrow_up, class: "h-4 w-4") %>
+        <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Egresos</span>
+      </div>
+      <p class="mt-2 text-xl font-semibold tabular-nums">$<%= number_with_precision(egresos, precision: 2, delimiter: ",") %></p>
+    </div>
+  </section>
+
+  <!-- Presupuesto -->
+  <% if @budget %>
+    <%= link_to weekly_budget_path, class: "block group" do %>
+      <section class="rounded-xl border border-gray-100 dark:border-gray-800 p-5 space-y-3 transition-colors group-hover:border-gray-200 dark:group-hover:border-gray-700">
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-medium">Presupuesto semanal</span>
+          <span class="text-xs text-gray-400 tabular-nums">restan $<%= number_with_precision(@budget.remaining, precision: 2) %></span>
+        </div>
+
+        <% pct = @budget.available.positive? ? [(@budget.spent / @budget.available * 100).to_f, 100].min : 100 %>
+        <div class="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2 overflow-hidden">
+          <div class="h-2 rounded-full <%= @budget.overspent? ? 'bg-rose-500' : 'bg-emerald-500' %>" style="width: <%= pct %>%"></div>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 tabular-nums">
+          <span>$<%= number_with_precision(@budget.spent, precision: 2) %> gastado</span>
+          <span>de $<%= number_with_precision(@budget.available, precision: 2) %></span>
+        </div>
+
+        <% if @budget.carried_over.positive? %>
+          <p class="text-xs text-gray-400">Incluye $<%= number_with_precision(@budget.carried_over, precision: 2) %> de semanas anteriores</p>
+        <% end %>
+      </section>
+    <% end %>
+  <% end %>
+
+  <!-- Movimientos recientes -->
+  <section>
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-sm font-medium">Movimientos recientes</h2>
+      <%= link_to "Ver todos", transactions_path, class: "text-xs text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors" %>
+    </div>
+
+    <% recientes = current_user.transactions.includes(:category).order(date: :desc, created_at: :desc).limit(6) %>
+    <% if recientes.any? %>
+      <div class="divide-y divide-gray-100 dark:divide-gray-800">
+        <% recientes.each do |t| %>
+          <div class="flex items-center justify-between py-3">
+            <div class="min-w-0">
+              <p class="text-sm font-medium truncate"><%= t.description %></p>
+              <p class="text-xs text-gray-400 mt-0.5"><%= t.category&.name || "Sin categoría" %> · <%= l(t.date, format: :short) %></p>
+            </div>
+            <span class="text-sm font-semibold tabular-nums <%= t.ingreso? ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-900 dark:text-gray-100' %>">
+              <%= t.ingreso? ? "+" : "−" %>$<%= number_with_precision(t.amount, precision: 2) %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="rounded-xl border border-dashed border-gray-200 dark:border-gray-800 py-10 text-center">
+        <p class="text-sm text-gray-400">Todavía no registraste movimientos</p>
+        <%= link_to "Agregar el primero", new_transaction_path, class: "mt-2 inline-block text-sm font-medium text-gray-900 dark:text-white hover:underline" %>
+      </div>
+    <% end %>
+  </section>
+</div>

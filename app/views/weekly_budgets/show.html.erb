@@ -1,0 +1,147 @@
+<div class="space-y-8">
+  <!-- ==================== MENSUAL ==================== -->
+  <div>
+    <h1 class="text-xl font-semibold tracking-tight">Presupuesto mensual</h1>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      Tus ingresos, suscripciones y gastos del mes.
+    </p>
+  </div>
+
+  <!-- Resumen mensual -->
+  <section class="rounded-2xl border border-gray-100 dark:border-gray-800 p-6 space-y-5">
+    <div class="flex items-center justify-between">
+      <span class="text-sm font-medium">Este mes · <%= l(Date.current, format: :short) %></span>
+      <% comprometido = @subscriptions_total + @monthly_spent %>
+      <% disponible = @monthly_limit - comprometido %>
+      <span class="text-xs px-2.5 py-1 rounded-full <%= disponible.negative? ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400' %>">
+        <%= disponible.negative? ? "Excedido" : "Disponible" %>
+      </span>
+    </div>
+
+    <p class="text-3xl font-semibold tabular-nums <%= disponible.negative? ? 'text-rose-600 dark:text-rose-400' : '' %>">
+      $<%= number_with_precision(disponible, precision: 2) %>
+    </p>
+    <p class="text-xs text-gray-400 mt-1">disponible de $<%= number_with_precision(@monthly_limit, precision: 2) %></p>
+
+    <!-- Barra de uso -->
+    <% pct = @monthly_limit.positive? ? [((@monthly_limit - disponible) / @monthly_limit * 100).to_f, 100].min : 100 %>
+    <div class="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2 overflow-hidden">
+      <div class="h-2 rounded-full <%= disponible.negative? ? 'bg-rose-500' : 'bg-emerald-500' %>" style="width: <%= pct %>%"></div>
+    </div>
+
+    <!-- Detalle -->
+    <div class="grid grid-cols-2 gap-3 text-center">
+      <div class="rounded-lg bg-gray-50 dark:bg-gray-900 p-3">
+        <p class="text-xs text-gray-400">Suscripciones</p>
+        <p class="mt-1 text-sm font-semibold tabular-nums">$<%= number_with_precision(@subscriptions_total, precision: 2) %></p>
+      </div>
+      <div class="rounded-lg bg-gray-50 dark:bg-gray-900 p-3">
+        <p class="text-xs text-gray-400">Gastos del mes</p>
+        <p class="mt-1 text-sm font-semibold tabular-nums">$<%= number_with_precision(@monthly_spent, precision: 2) %></p>
+      </div>
+    </div>
+
+    <!-- Link a suscripciones -->
+    <%= link_to subscriptions_path, class: "block text-center text-sm font-medium text-gray-900 dark:text-white hover:underline py-1" do %>
+      <%= pluralize(@subscriptions.count, "suscripción", "suscripciones") %> registradas →
+    <% end %>
+  </section>
+
+  <!-- Límite mensual -->
+  <section>
+    <h2 class="text-sm font-medium mb-3">Límite mensual</h2>
+    <%= form_with model: current_user, url: weekly_budget_path, method: :patch, local: true do |f| %>
+      <div class="flex gap-2">
+        <div class="relative flex-1">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+          <%= f.number_field :monthly_limit, step: 0.01, min: 0,
+                class: "w-full pl-7 pr-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900 tabular-nums focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white",
+                placeholder: number_with_precision(@monthly_limit, precision: 0) %>
+        </div>
+        <%= f.submit "Guardar", class: "rounded-lg bg-gray-900 text-white text-sm font-medium px-4 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 transition-colors cursor-pointer" %>
+      </div>
+      <p class="mt-2 text-xs text-gray-400">Calculado automáticamente desde el límite semanal si no especificás uno.</p>
+    <% end %>
+  </section>
+
+  <hr class="border-gray-100 dark:border-gray-800">
+
+  <!-- ==================== SEMANAL ==================== -->
+  <div>
+    <h2 class="text-lg font-semibold tracking-tight mb-1">Gastos semanales</h2>
+    <p class="text-sm text-gray-500 dark:text-gray-400">
+      Tu tope de gastos personales por semana. Lo que no gastás pasa a la siguiente.
+    </p>
+  </div>
+
+  <!-- Semana actual -->
+  <% if @current %>
+    <section class="rounded-2xl border border-gray-100 dark:border-gray-800 p-6 space-y-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium">Esta semana</p>
+          <p class="text-xs text-gray-400 mt-0.5"><%= l(@current.week_start, format: :short) %> — <%= l(@current.week_start.end_of_week, format: :short) %></p>
+        </div>
+        <span class="text-xs px-2.5 py-1 rounded-full <%= @current.overspent? ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400' %>">
+          <%= @current.overspent? ? "Excedido" : "En control" %>
+        </span>
+      </div>
+
+      <div>
+        <p class="text-3xl font-semibold tabular-nums <%= @current.overspent? ? 'text-rose-600 dark:text-rose-400' : '' %>">
+          $<%= number_with_precision(@current.remaining, precision: 2) %>
+        </p>
+        <p class="text-xs text-gray-400 mt-1">disponible de $<%= number_with_precision(@current.available, precision: 2) %></p>
+      </div>
+
+      <% pct = @current.available.positive? ? [(@current.spent / @current.available * 100).to_f, 100].min : 100 %>
+      <div class="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2 overflow-hidden">
+        <div class="h-2 rounded-full <%= @current.overspent? ? 'bg-rose-500' : 'bg-emerald-500' %>" style="width: <%= pct %>%"></div>
+      </div>
+
+      <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 tabular-nums">
+        <span>Gastado $<%= number_with_precision(@current.spent, precision: 2) %></span>
+        <% if @current.carried_over.positive? %>
+          <span>Base $<%= number_with_precision(@current.limit_amount, precision: 2) %> + $<%= number_with_precision(@current.carried_over, precision: 2) %> arrastrado</span>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <!-- Límite semanal -->
+  <section>
+    <h2 class="text-sm font-medium mb-3">Límite semanal</h2>
+    <%= form_with model: current_user, url: weekly_budget_path, method: :patch, local: true do |f| %>
+      <div class="flex gap-2">
+        <div class="relative flex-1">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+          <%= f.number_field :weekly_limit, step: 0.01, min: 0,
+                class: "w-full pl-7 pr-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900 tabular-nums focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white" %>
+        </div>
+        <%= f.submit "Guardar", class: "rounded-lg bg-gray-900 text-white text-sm font-medium px-4 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 transition-colors cursor-pointer" %>
+      </div>
+      <p class="mt-2 text-xs text-gray-400">Sugerido: entre $15 y $20 por semana.</p>
+    <% end %>
+  </section>
+
+  <!-- Historial semanal -->
+  <% history = @budgets.reject { |b| b.week_start == Date.current.beginning_of_week } %>
+  <% if history.any? %>
+    <section>
+      <h2 class="text-sm font-medium mb-3">Semanas anteriores</h2>
+      <div class="divide-y divide-gray-100 dark:divide-gray-800">
+        <% history.each do |b| %>
+          <div class="flex items-center justify-between py-3">
+            <div>
+              <p class="text-sm"><%= l(b.week_start, format: :short) %> — <%= l(b.week_start.end_of_week, format: :short) %></p>
+              <p class="text-xs text-gray-400 tabular-nums">$<%= number_with_precision(b.spent, precision: 2) %> de $<%= number_with_precision(b.available, precision: 2) %></p>
+            </div>
+            <span class="text-sm font-semibold tabular-nums <%= b.overspent? ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400' %>">
+              <%= b.overspent? ? "−" : "+" %>$<%= number_with_precision(b.remaining.abs, precision: 2) %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

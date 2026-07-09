@@ -1,0 +1,171 @@
+<%
+  field = "w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white transition-shadow text-sm"
+  label = "block text-sm font-medium mb-1.5"
+  dias = %w[Domingo Lunes Martes Miércoles Jueves Viernes Sábado]
+%>
+
+<div class="space-y-8">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-xl font-semibold tracking-tight">Suscripciones</h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Servicios y gastos recurrentes.
+      </p>
+    </div>
+    <%= button_to create_pending_subscriptions_path, method: :post,
+          class: "rounded-lg bg-gray-900 text-white text-xs font-medium px-4 py-2 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 transition-colors cursor-pointer" do %>
+      Crear transa. pendientes
+    <% end %>
+  </div>
+
+  <!-- Total mensual + botón -->
+  <% if @subscriptions.any? %>
+    <div class="rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+      <p class="text-sm font-medium mb-1">Total por mes</p>
+      <p class="text-3xl font-semibold tabular-nums">$<%= number_with_precision(@total, precision: 2) %></p>
+      <p class="text-xs text-gray-400 mt-1">
+        de $<%= number_with_precision(@monthly_limit, precision: 0) %> de presupuesto mensual
+        · $<%= number_with_precision(@total + @monthly_spent, precision: 2) %> comprometido
+      </p>
+    </div>
+  <% end %>
+
+  <!-- Lista de suscripciones -->
+  <% if @subscriptions.any? %>
+    <section>
+      <div class="divide-y divide-gray-100 dark:divide-gray-800">
+        <% @subscriptions.each do |sub| %>
+          <div class="py-3" data-subscription-id="<%= sub.id %>">
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-medium truncate"><%= sub.name %></p>
+                <p class="text-xs text-gray-400">
+                  <% if sub.weekly? %>
+                    <%= dias[sub.day_of_week || 0] %> · $<%= number_with_precision(sub.amount, precision: 2) %>/semana
+                  <% else %>
+                    Día <%= sub.billing_day %> · $<%= number_with_precision(sub.amount, precision: 2) %>/mes
+                  <% end %>
+                  <% if sub.category %>
+                    · <%= sub.category.name %>
+                  <% end %>
+                  <% if sub.auto_create %>
+                    · <span class="text-emerald-600 dark:text-emerald-400">automático</span>
+                  <% end %>
+                </p>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <button
+                  data-action="click->inline-form#edit"
+                  data-url="<%= subscription_path(sub) %>"
+                  class="text-xs text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                >Editar</button>
+                <%= button_to subscription_path(sub),
+                      method: :delete,
+                      class: "text-xs text-rose-500 hover:text-rose-600 transition-colors",
+                      data: { turbo_confirm: "¿Eliminar #{sub.name}?" } do %>
+                  Eliminar
+                <% end %>
+              </div>
+            </div>
+
+            <!-- Inline edit form -->
+            <div class="hidden mt-3 pt-3 border-t border-gray-100 dark:border-gray-800" data-edit-form="<%= sub.id %>">
+              <%= form_with model: sub, url: subscription_path(sub), method: :patch, local: true, class: "space-y-3" do |f| %>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <%= f.label :name, "Nombre", class: label %>
+                    <%= f.text_field :name, class: field %>
+                  </div>
+                  <div>
+                    <%= f.label :amount, "Monto", class: label %>
+                    <%= f.number_field :amount, step: 0.01, min: 0, class: field %>
+                  </div>
+                  <div>
+                    <%= f.label :frequency, "Frecuencia", class: label %>
+                    <%= f.select :frequency,
+                          [["Mensual", "monthly"], ["Semanal", "weekly"]],
+                          {}, class: field %>
+                  </div>
+                  <div id="edit-billing-day-<%= sub.id %>" class="<%= 'hidden' if sub.weekly? %>">
+                    <%= f.label :billing_day, "Día del mes", class: label %>
+                    <%= f.number_field :billing_day, min: 1, max: 31, class: field %>
+                  </div>
+                  <div id="edit-day-of-week-<%= sub.id %>" class="<%= 'hidden' if sub.monthly? %>">
+                    <%= f.label :day_of_week, "Día de la semana", class: label %>
+                    <%= f.select :day_of_week,
+                          dias.each_with_index.map { |d,i| [d, i] },
+                          {}, class: field %>
+                  </div>
+                  <div>
+                    <%= f.label :category_id, "Categoría", class: label %>
+                    <%= f.collection_select :category_id, @categories, :id, :name,
+                          { prompt: "Sin categoría" }, class: field %>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4">
+                  <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                    <%= f.check_box :auto_create, class: "rounded border-gray-300 dark:border-gray-700" %>
+                    Crear transacción automáticamente
+                  </label>
+                  <div class="flex gap-2 ml-auto">
+                    <%= f.submit "Guardar", class: "rounded-lg bg-gray-900 text-white text-xs font-medium px-3 py-2 hover:bg-gray-800 dark:bg-white dark:text-gray-900 cursor-pointer" %>
+                    <button type="button" data-action="click->inline-form#cancel" class="text-xs text-gray-400 hover:text-gray-600">Cancelar</button>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% else %>
+    <div class="rounded-xl border border-dashed border-gray-200 dark:border-gray-800 py-10 text-center">
+      <p class="text-sm text-gray-400">No tenés suscripciones registradas</p>
+    </div>
+  <% end %>
+
+  <!-- Agregar nueva suscripción -->
+  <section class="rounded-xl border border-gray-100 dark:border-gray-800 p-5">
+    <h2 class="text-sm font-medium mb-3">Agregar suscripción</h2>
+    <%= form_with model: Subscription.new, url: subscriptions_path, local: true, class: "space-y-3" do |f| %>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <%= f.label :name, "Nombre", class: label %>
+          <%= f.text_field :name, class: field, placeholder: "Spotify", required: true %>
+        </div>
+        <div>
+          <%= f.label :amount, "Monto", class: label %>
+          <%= f.number_field :amount, step: 0.01, min: 0, class: field, placeholder: "4.99", required: true %>
+        </div>
+        <div>
+          <%= f.label :frequency, "Frecuencia", class: label %>
+          <%= f.select :frequency,
+                [["Mensual", "monthly"], ["Semanal", "weekly"]],
+                {}, class: field, data: { action: "change->subscription-form#toggle" } %>
+        </div>
+        <div id="new-billing-day">
+          <%= f.label :billing_day, "Día del mes", class: label %>
+          <%= f.number_field :billing_day, min: 1, max: 31, class: field, value: 1 %>
+        </div>
+        <div id="new-day-of-week" class="hidden">
+          <%= f.label :day_of_week, "Día de la semana", class: label %>
+          <%= f.select :day_of_week,
+                dias.each_with_index.map { |d,i| [d, i] },
+                { selected: 0 }, class: field %>
+        </div>
+        <div>
+          <%= f.label :category_id, "Categoría", class: label %>
+          <%= f.collection_select :category_id, @categories, :id, :name,
+                { prompt: "Sin categoría" }, class: field %>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <%= f.check_box :auto_create, class: "rounded border-gray-300 dark:border-gray-700" %>
+          Crear transacción automáticamente
+        </label>
+        <%= f.submit "Agregar", class: "ml-auto rounded-lg bg-gray-900 text-white text-sm font-medium py-2.5 px-4 hover:bg-gray-800 dark:bg-white dark:text-gray-900 cursor-pointer" %>
+      </div>
+    <% end %>
+  </section>
+</div>

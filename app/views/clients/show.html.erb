@@ -1,0 +1,51 @@
+<div class="space-y-6">
+  <div class="flex items-start justify-between gap-3">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-base font-semibold text-gray-500 dark:text-gray-400">
+        <%= @client.name.first.upcase %>
+      </div>
+      <div class="min-w-0">
+        <h1 class="text-lg font-semibold tracking-tight truncate"><%= @client.name %></h1>
+        <p class="text-xs text-gray-400 truncate"><%= @client.email %><%= " · #{@client.phone}" if @client.phone.present? %></p>
+      </div>
+    </div>
+    <div class="flex items-center gap-0.5 shrink-0">
+      <%= link_to edit_client_path(@client), class: "p-2 rounded-md text-gray-400 hover:text-gray-900 hover:bg-gray-100 dark:hover:text-white dark:hover:bg-gray-800", "aria-label": "Editar" do %>
+        <%= icon(:pencil, class: "h-4 w-4") %>
+      <% end %>
+      <%= link_to client_path(@client), data: { turbo_method: :delete, turbo_confirm: "¿Eliminar este cliente?" }, class: "p-2 rounded-md text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30", "aria-label": "Eliminar" do %>
+        <%= icon(:trash, class: "h-4 w-4") %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div class="rounded-xl bg-gray-50 dark:bg-gray-900 p-4">
+      <p class="text-xs text-gray-500 dark:text-gray-400">Facturado</p>
+      <p class="mt-1 text-xl font-semibold tabular-nums">$<%= number_with_precision(@client.total_invoiced, precision: 2) %></p>
+    </div>
+    <div class="rounded-xl bg-gray-50 dark:bg-gray-900 p-4">
+      <p class="text-xs text-gray-500 dark:text-gray-400">Pendiente</p>
+      <p class="mt-1 text-xl font-semibold tabular-nums <%= @client.total_pending.positive? ? 'text-amber-600 dark:text-amber-400' : '' %>">$<%= number_with_precision(@client.total_pending, precision: 2) %></p>
+    </div>
+  </div>
+
+  <section>
+    <h2 class="text-sm font-medium mb-3">Facturas</h2>
+    <% if @invoices.any? %>
+      <div class="divide-y divide-gray-100 dark:divide-gray-800">
+        <% @invoices.each do |inv| %>
+          <div class="flex items-center justify-between py-3">
+            <div class="min-w-0">
+              <p class="text-sm font-medium truncate"><%= inv.name %></p>
+              <p class="text-xs text-gray-400"><%= inv.status.capitalize %> · <%= l(inv.issue_date, format: :short) %></p>
+            </div>
+            <span class="text-sm font-semibold tabular-nums">$<%= number_with_precision(inv.amount, precision: 2) %></span>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-sm text-gray-400">Este cliente no tiene facturas.</p>
+    <% end %>
+  </section>
+</div>

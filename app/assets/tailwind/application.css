@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Enable class-based dark mode: `dark:` styles apply when an ancestor
+   (the <html> element) has the `dark` class. This is required in Tailwind v4,
+   which otherwise ties dark mode to the OS `prefers-color-scheme`. */
+@custom-variant dark (&:where(.dark, .dark *));

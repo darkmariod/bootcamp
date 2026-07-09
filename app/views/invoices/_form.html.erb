@@ -1,0 +1,51 @@
+<%
+  field = "w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white transition-shadow"
+  label = "block text-sm font-medium mb-1.5"
+%>
+<%= form_with model: invoice, local: true do |f| %>
+  <% if invoice.errors.any? %>
+    <div class="mb-4 rounded-lg bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 text-sm px-4 py-3">
+      <%= invoice.errors.full_messages.to_sentence %>
+    </div>
+  <% end %>
+
+  <div class="space-y-4">
+    <div>
+      <%= f.label :name, "Descripción", class: label %>
+      <%= f.text_field :name, class: field, placeholder: "Ej: Servicio de diseño" %>
+    </div>
+
+    <div>
+      <%= f.label :amount, "Monto", class: label %>
+      <div class="relative">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+        <%= f.number_field :amount, step: 0.01, class: "#{field} pl-7 tabular-nums" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :issue_date, "Fecha de emisión", class: label %>
+      <%= f.date_field :issue_date, value: (f.object.issue_date || Date.current), class: field %>
+    </div>
+
+    <div>
+      <%= f.label :status, "Estado", class: label %>
+      <%= f.select :status, [["Pendiente", "pendiente"], ["Pagada", "pagada"], ["Vencida", "vencida"]], {}, class: field %>
+    </div>
+
+    <div>
+      <%= f.label :client_id, "Cliente", class: label %>
+      <%= f.collection_select :client_id, clients, :id, :name, { prompt: "Seleccioná un cliente" }, class: field %>
+    </div>
+
+    <div>
+      <%= f.label :description, "Notas", class: label %>
+      <%= f.text_area :description, rows: 3, class: field, placeholder: "Opcional" %>
+    </div>
+
+    <div class="flex gap-2 pt-2">
+      <%= f.submit submit_label, class: "flex-1 rounded-lg bg-gray-900 text-white text-sm font-medium py-2.5 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 transition-colors cursor-pointer" %>
+      <%= link_to "Cancelar", invoices_path, class: "flex-1 rounded-lg border border-gray-200 dark:border-gray-800 text-sm py-2.5 text-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
+    </div>
+  </div>
+<% end %>

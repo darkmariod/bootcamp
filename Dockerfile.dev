@@ -1,0 +1,29 @@
+# Development image for the Finanzas app.
+# Kept separate from the production Dockerfile that `rails new` generated.
+FROM ruby:3.3
+
+# Install OS packages: postgres client (for pg gem + psql) and node is NOT
+# needed because tailwindcss-rails ships a standalone binary.
+RUN apt-get update -qq \
+  && apt-get install -y --no-install-recommends postgresql-client \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install gems first so this layer is cached unless the Gemfile changes.
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+# Copy the rest of the app. In dev this is overridden by a bind mount,
+# but we copy it so the image also works standalone.
+COPY . .
+
+# Entrypoint prepares the DB and clears any stale server pid.
+COPY bin/docker-entrypoint-dev /usr/bin/
+RUN chmod +x /usr/bin/docker-entrypoint-dev
+ENTRYPOINT ["docker-entrypoint-dev"]
+
+EXPOSE 3000
+
+# Start Rails + the Tailwind watcher via foreman (bin/dev / Procfile.dev).
+CMD ["bin/dev"]

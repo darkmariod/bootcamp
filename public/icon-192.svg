@@ -1,0 +1,9 @@
+<svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" fill="#2563eb"/>
+  <g transform="translate(48, 48)" fill="white">
+    <!-- Money/wallet icon -->
+    <path d="M 0 10 L 0 90 Q 0 96 6 96 L 90 96 Q 96 96 96 90 L 96 10 Q 96 4 90 4 L 6 4 Q 0 4 0 10 Z" fill="none" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="72" cy="50" r="12" fill="white"/>
+    <line x1="12" y1="30" x2="84" y2="30" stroke="white" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>
