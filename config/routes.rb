@@ -13,6 +13,8 @@ Rails.application.routes.draw do
   resources :clients
   resources :invoices
 
+  get "reportes" => "reports#index", as: :reports
+
   resource :weekly_budget, only: [:show, :update], path: "presupuesto"
   resources :subscriptions, only: [:index, :create, :update, :destroy] do
     collection do

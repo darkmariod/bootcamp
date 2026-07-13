@@ -1,0 +1,98 @@
+<%
+  field = "w-full px-3 py-2 border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+  label = "block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1"
+%>
+<div class="space-y-8">
+  <div>
+    <h1 class="text-xl font-semibold tracking-tight">Reportes</h1>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Filtrá y analizá tus movimientos.</p>
+  </div>
+
+  <!-- Filtros -->
+  <%= form_with url: reports_path, method: :get, local: true do %>
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <%= label_tag :desde, "Desde", class: label %>
+        <%= date_field_tag :desde, @desde, class: field %>
+      </div>
+      <div>
+        <%= label_tag :hasta, "Hasta", class: label %>
+        <%= date_field_tag :hasta, @hasta, class: field %>
+      </div>
+      <div>
+        <%= label_tag :kind, "Tipo", class: label %>
+        <%= select_tag :kind,
+              options_for_select([["Todos", ""], ["Ingreso", "ingreso"], ["Gasto personal", "gasto_personal"], ["Gasto de cliente", "gasto_cliente"]], @kind),
+              class: field %>
+      </div>
+      <div>
+        <%= label_tag :client_id, "Cliente", class: label %>
+        <%= select_tag :client_id,
+              options_from_collection_for_select(@clients, :id, :name, @client_id).prepend(content_tag(:option, "Todos", value: "")),
+              class: field %>
+      </div>
+    </div>
+    <div class="flex gap-2 mt-3">
+      <%= submit_tag "Aplicar", class: "flex-1 rounded-lg bg-gray-900 text-white text-sm font-medium py-2.5 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 transition-colors cursor-pointer" %>
+      <%= link_to "Limpiar", reports_path, class: "rounded-lg border border-gray-200 dark:border-gray-800 text-sm px-4 py-2.5 text-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
+    </div>
+  <% end %>
+
+  <!-- Tarjetas resumen -->
+  <section class="grid grid-cols-2 gap-3">
+    <div class="rounded-xl bg-gray-50 dark:bg-gray-900 p-4">
+      <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total ingresos</p>
+      <p class="mt-1 text-xl font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">$<%= number_with_precision(@total_ingresos, precision: 2, delimiter: ",") %></p>
+    </div>
+    <div class="rounded-xl bg-gray-50 dark:bg-gray-900 p-4">
+      <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total egresos</p>
+      <p class="mt-1 text-xl font-semibold tabular-nums text-rose-600 dark:text-rose-400">$<%= number_with_precision(@total_egresos, precision: 2, delimiter: ",") %></p>
+    </div>
+  </section>
+  <p class="text-xs text-gray-400 -mt-4"><%= pluralize(@count, "movimiento") %> en el período seleccionado.</p>
+
+  <!-- Gráfico: egresos por categoría -->
+  <% if @por_categoria.any? %>
+    <section>
+      <h2 class="text-sm font-medium mb-3">Egresos por categoría</h2>
+      <% max = @por_categoria.first.last %>
+      <div class="space-y-2.5">
+        <% @por_categoria.each do |name, total| %>
+          <div>
+            <div class="flex items-center justify-between text-xs mb-1">
+              <span class="text-gray-600 dark:text-gray-300 truncate"><%= name %></span>
+              <span class="tabular-nums font-medium">$<%= number_with_precision(total, precision: 2) %></span>
+            </div>
+            <div class="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2 overflow-hidden">
+              <div class="h-2 rounded-full bg-gray-900 dark:bg-white" style="width: <%= max.positive? ? (total / max * 100).to_f.round(1) : 0 %>%"></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <!-- Lista de movimientos -->
+  <section>
+    <h2 class="text-sm font-medium mb-3">Detalle</h2>
+    <% if @transactions.any? %>
+      <div class="divide-y divide-gray-100 dark:divide-gray-800">
+        <% @transactions.each do |t| %>
+          <div class="flex items-center justify-between py-3">
+            <div class="min-w-0">
+              <p class="text-sm font-medium truncate"><%= t.description %></p>
+              <p class="text-xs text-gray-400 mt-0.5"><%= t.category&.name || "Sin categoría" %><%= " · #{t.client.name}" if t.client %> · <%= l(t.date, format: :short) %></p>
+            </div>
+            <span class="text-sm font-semibold tabular-nums <%= t.ingreso? ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-900 dark:text-gray-100' %>">
+              <%= t.ingreso? ? "+" : "−" %>$<%= number_with_precision(t.amount, precision: 2) %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="rounded-xl border border-dashed border-gray-200 dark:border-gray-800 py-10 text-center">
+        <p class="text-sm text-gray-400">No hay movimientos en este período</p>
+      </div>
+    <% end %>
+  </section>
+</div>
